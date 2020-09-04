@@ -1,0 +1,15 @@
+@import url("https://fonts.googleapis.com/css2?family=Pacifico&display=swap");
+
+* {
+    background-color: goldenrod;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: "Pacifico", cursive;
+    text-align: center;
+}
+
+#canvas {
+    border: 3px dotted black;
+    width: 500px;
+    height: 200px;
+}
