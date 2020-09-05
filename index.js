@@ -37,6 +37,14 @@ app.use(function (req, res, next) {
     next();
 });
 
+///middleware for errors
+app.use(function (err, req, res, next) {
+    res.status(err.status || 500);
+    res.render("error", {
+        message: err.message,
+        error: err,
+    });
+});
 ////////////////////////////////ROOT ROUTE //////////////////////////////////////
 app.get("/", (req, res) => {
     console.log("get request to root route happend!!!");
@@ -51,36 +59,51 @@ app.get("/petition", (req, res) => {
         res.render("petition", {
             layout: "main",
         });
-        db.getSigners()
-            .then(({ rows }) => {
-                //console.log("data: ", rows);
-            })
-            .catch((err) => {
-                console.log("err in getCities: ", err);
-            });
     } else {
         res.redirect("/signed");
     } //closes if-else-cookie
 });
 
 app.post("/petition", (req, res) => {
-    console.log("req.body: ", req.body);
-    console.log("req.body.firstname: ", req.body.firstname);
-    console.log("req.body.lastname: ", req.body.lastname);
-    //const firstname = req.body.username;
-    //console.log("firstname: ", firstname);
-    /*
+    //console.log("req.body: ", req.body);
+    let firstname = req.body.firstname;
+    //console.log(firstname);
+    let lastname = req.body.lastname;
+    //console.log(lastname);
+    let sign = req.body.signature;
+    //console.log(sign);
+    let userId;
+
     db.addSigner(firstname, lastname, sign)
-        .then(() => {
-            console.log("yaayaaa");
+        .then((id) => {
+            //console.log(id);
+            //console.log(id.rows[0]);#
+            //console.log(id.rows[0].id);
+            //store id in variable
+            userId = id.rows[0].id;
+            //console.log(thisSign);
+            //console.log("req.session: ", req.session);
+            req.session.signum = userId;
+            //console.log("req.session: ", req.session);
+            //set general cookie
+            req.session.cumin = "signed!";
+            console.log("req.session: ", req.session);
+            res.redirect("/signed");
         })
         .catch((err) => {
             console.log("err in addSigner: ", err);
+            res.redirect("/petition");
+            /*
+            res.render("petition", {
+                error: "Oooops! Please try again!",
+                templ: "templ",
+            });
+            */
         });
-    console.log("req.session: ", req.session);
-    req.session.cumin = "signed!";
-    console.log("req.session after adding something: ", req.session);
-    */
+
+    //console.log("req.session: ", req.session);
+
+    //console.log("req.session after adding something: ", req.session);
 });
 
 ////////////////////////////////SIGNED ROUTE //////////////////////////////////////
@@ -90,22 +113,46 @@ app.get("/signed", (req, res) => {
     res.render("signed", {
         layout: "main",
     });
+    db.getSignature(req.session.signum)
+        .then(({ rows }) => {
+            //console.log(rows);
+            let sign = rows[0].sign;
+            //console.log(sign);
+            //console.log(typeof rows);
+            //console.log(typeof sign);
+        })
+        .catch((err) => {
+            console.log("err in getSignature: ", err);
+        });
+    /*
+    db.getTable()
+        .then(({ rows }) => {
+            for (let i = 0; i < rows.length; i++) {
+                //console.log("id: ", rows[i].id);
+                //console.log("firstname: ", rows[i].firstname);
+                //console.log("lastname: ", rows[i].lastname);
+                //console.log("signature: ", rows[i].sign);
+            }
+        })
+        .catch((err) => {
+            console.log("err in getSigners: ", err);
+        });
+        */
 });
 
 ////////////////////////////////SIGNERS ROUTE //////////////////////////////////////
 app.get("/signers", (req, res) => {
     console.log("get request to signers route happend!!!");
 
-    res.render("signers", {
-        layout: "main",
-    });
-
-    db.deliverSigner()
+    db.getSigners()
         .then(({ rows }) => {
-            res.send(rows);
+            res.render("signers", {
+                signers: rows,
+            });
+            //console.log("data: ", rows);
         })
         .catch((err) => {
-            console.log("err in getCities: ", err);
+            console.log("err in getSigners: ", err);
         });
 });
 
