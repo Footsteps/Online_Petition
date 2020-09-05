@@ -5,13 +5,14 @@ var db = spicedPg("postgres:angela:twilight@localhost:5432/petition");
 //spiced pg is looking in my database --> actors
 //table --> cities
 
-module.exports.getSigners = () => {
+module.exports.getTable = () => {
     return db.query(`SELECT * FROM signers`);
 };
 
 module.exports.addSigner = (firstname, lastname, sign) => {
     return db.query(
         `
+    
     INSERT INTO signers (firstname, lastname, sign)
     VALUES ($1, $2, $3)
     RETURNING id
@@ -20,6 +21,10 @@ module.exports.addSigner = (firstname, lastname, sign) => {
     );
 };
 
-module.exports.deliverSigner = () => {
-    db.query(`SELECT firstname, lastname FROM signers `);
+module.exports.getSigners = () => {
+    return db.query(`SELECT firstname, lastname FROM signers`);
+};
+
+module.exports.getSignature = (id) => {
+    return db.query(`SELECT sign FROM signers WHERE ${id} = id;`);
 };
