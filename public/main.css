@@ -1,15 +1,86 @@
-@import url("https://fonts.googleapis.com/css2?family=Pacifico&display=swap");
+/*https://colorhunt.co/palette/201777*/
+/*lila #440047 */
+/*pink #E11d74 */
+/*grün #91d18b  */
+/*hell #fbecec   */
+@import url("https://fonts.googleapis.com/css2?family=Abril+Fatface&display=swap");
 
 * {
-    background-color: goldenrod;
+    background-color: #fbecec;
     margin: 0;
     box-sizing: border-box;
-    font-family: "Pacifico", cursive;
+    font-family: "Abril Fatface", cursive;
+    color: #440047;
     text-align: center;
+    padding: 20px;
+}
+
+h1,
+h2 {
+    text-shadow: 0 0 1px blacK;
+}
+
+p {
+    font-size: 22px;
+}
+
+.names {
+    display: flex;
+    width: 150%;
+    margin-left: 50%;
+    text-align: center;
+}
+
+#lastname,
+#firstname {
+    flex-direction: row;
+    width: 400px;
+}
+
+#canvas {
+    margin-left: 90%;
+}
+input,
+button {
+    background-color: #440047;
+    display: block;
+    margin-left: 40px;
+    margin-right: 40px;
 }
 
 #canvas {
     border: 3px dotted black;
     width: 500px;
     height: 200px;
+}
+
+#submit-button {
+    color: #fbecec;
+    margin-top: 20px;
+    margin-left: 115%;
+    width: 200px;
+}
+
+#unsplash {
+    box-shadow: 0 0 15px blacK;
+}
+
+#sign {
+    transform: translate(80%);
+}
+
+.signature {
+    border: 3px solid #440047;
+    padding: 30px;
+}
+
+.link {
+    padding: 25px;
+    font-size: 50px;
+}
+
+.signers {
+    border: 3px solid #440047;
+    margin-left: 30%;
+    margin-right: 30%;
 }
