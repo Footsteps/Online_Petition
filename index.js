@@ -47,13 +47,13 @@ app.use(function (err, req, res, next) {
 });
 ////////////////////////////////ROOT ROUTE //////////////////////////////////////
 app.get("/", (req, res) => {
-    console.log("get request to root route happend!!!");
+    //console.log("get request to root route happend!!!");
     res.redirect("/petition");
 });
 
 ////////////////////////////////PETITION ROUTE //////////////////////////////////////
 app.get("/petition", (req, res) => {
-    console.log("get request to petition route happend!!!");
+    //console.log("get request to petition route happend!!!");
 
     if (!req.session.cumin) {
         res.render("petition", {
@@ -91,14 +91,10 @@ app.post("/petition", (req, res) => {
             res.redirect("/signed");
         })
         .catch((err) => {
-            console.log("err in addSigner: ", err);
-            res.redirect("/petition");
-            /*
             res.render("petition", {
-                error: "Oooops! Please try again!",
-                templ: "templ",
+                error: "Ooops, something went wrong! Please sign again.",
             });
-            */
+            console.log("err in addSigner: ", err);
         });
 
     //console.log("req.session: ", req.session);
@@ -109,10 +105,8 @@ app.post("/petition", (req, res) => {
 ////////////////////////////////SIGNED ROUTE //////////////////////////////////////
 
 app.get("/signed", (req, res) => {
-    console.log("get request to signed route happend!!!");
-    res.render("signed", {
-        layout: "main",
-    });
+    //console.log("get request to signed route happend!!!");
+    //res.render("signed", {});
     db.getSignature(req.session.signum)
         .then(({ rows }) => {
             //console.log(rows);
@@ -120,6 +114,10 @@ app.get("/signed", (req, res) => {
             //console.log(sign);
             //console.log(typeof rows);
             //console.log(typeof sign);
+
+            res.render("signed", {
+                sign,
+            });
         })
         .catch((err) => {
             console.log("err in getSignature: ", err);
@@ -142,12 +140,12 @@ app.get("/signed", (req, res) => {
 
 ////////////////////////////////SIGNERS ROUTE //////////////////////////////////////
 app.get("/signers", (req, res) => {
-    console.log("get request to signers route happend!!!");
+    //console.log("get request to signers route happend!!!");
 
     db.getSigners()
         .then(({ rows }) => {
             res.render("signers", {
-                signers: rows,
+                rows: rows,
             });
             //console.log("data: ", rows);
         })
