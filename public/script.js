@@ -5,9 +5,7 @@ console.log("sanity check!");
 let canvas = document.getElementById("canvas");
 let ctx = canvas.getContext("2d");
 
-let signatureD = document.getElementById("signature").value;
-
-ctx.strokeStyle = "royalblue";
+ctx.strokeStyle = "#440047";
 ctx.lineWidth = 3;
 let signing;
 let signature;
@@ -34,9 +32,11 @@ function sign(event) {
 }
 
 function getSignature() {
-    signature = canvas.toDataURL("image/jpeg", 0.1);
+    signature = canvas.toDataURL();
     //console.log(signature);
-    signatureD = signature;
-    console.log(signatureD);
-    return signatureD;
+    document.getElementById("signature").value = signature;
+}
+
+function visible() {
+    document.getElementById("message").style.visiblity = "visible";
 }
