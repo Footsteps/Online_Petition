@@ -1,0 +1,26 @@
+{{#if error}}
+<h3>{{error}}</h3>
+{{/if}}
+
+<div>
+<h1>Welcome!</h1>
+        
+        <p>Register here if you think some of the programmers working and 
+        learning at the Ullsteinhaus should spend a fair amount of their time on programming 
+        those drones to deliver some icecream, or some cookies...<br>
+        Think about how much more amazing being in this building could be! 
+        And how much fun for the Spiced-Students..</p>
+
+<img id ="unsplash" src="/unsplash.jpg" alt="Fernsehturm mit Dronen">
+
+<form method='POST' style="display: flex; flex-direction: column; justify-content: space-between; width: 40%; height: 50%;">
+         <div class>
+            <input type='text' id="first" name='first' placeholder='First Name' style="color: #fbecec;">
+            <input type='text' id='last' name='last' placeholder='Last Name' style="color: #fbecec;">
+            <input type='text' id='email' name='email' placeholder='E-Mail' style="color: #fbecec;">
+            <input type='text' id='password' name='password' placeholder='Password' style="color: #fbecec;">
+        </div>
+            <input type="hidden" name="_csrf" value="{{csrfToken}}">
+            <button id="submit-button">Sign up!</submit>
+</form>
+       
