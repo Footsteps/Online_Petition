@@ -36,7 +36,3 @@ function getSignature() {
     //console.log(signature);
     document.getElementById("signature").value = signature;
 }
-
-function visible() {
-    document.getElementById("message").style.visiblity = "visible";
-}
