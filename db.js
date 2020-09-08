@@ -5,23 +5,27 @@ var db = spicedPg("postgres:angela:twilight@localhost:5432/petition");
 //spiced pg is looking in my database --> actors
 //table --> cities
 
-module.exports.getTable = () => {
+module.exports.getTableSigners = () => {
     return db.query(`SELECT * FROM signers`);
 };
 
-module.exports.addSigner = (firstname, lastname, sign) => {
+module.exports.getTableUsers = () => {
+    return db.query(`SELECT * FROM users`);
+};
+
+module.exports.addSignature = (sign, user_id) => {
     return db.query(
         `
-    INSERT INTO signers (firstname, lastname, sign)
-    VALUES ($1, $2, $3)
+    INSERT INTO signers (sign, user_id)
+    VALUES ($1, $2)
     RETURNING id
     `,
-        [firstname || null, lastname || null, sign || null]
+        [sign, user_id]
     );
 };
 
 module.exports.getSigners = () => {
-    return db.query(`SELECT firstname, lastname FROM signers`);
+    return db.query(`SELECT first, last FROM users`);
 };
 
 module.exports.getSignature = (id) => {
@@ -34,6 +38,7 @@ module.exports.register = (first, last, email, password) => {
         `
     INSERT INTO users (first, last, email, password)
     VALUES ($1, $2, $3, $4)
+    RETURNING id
     `,
         [first, last, email, password]
     );
@@ -45,6 +50,8 @@ module.exports.getUsers = () => {
 };
 
 ////////////////////login////////////////////////////////////
-module.exports.login = (email, password) => {
-    return db.query(`SELECT password FROM signers);`);
+module.exports.email = (email) => {
+    return db.query(`SELECT * FROM users WHERE email = $1`, [email]);
 };
+
+/////////////////get password/////////////////////////
