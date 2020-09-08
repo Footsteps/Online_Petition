@@ -1,23 +1,30 @@
+{{#if error}}
+<h3>{{error}}</h3>
+{{/if}}
+
+<div>
 <h1>Welcome!</h1>
-        <p>This goes out to all the People working at Ullsteinhaus:</h2>
-        Haven't you had those moments in the last weeks where you sat there sweating and thinking: 
-        well, some icecream would be just what I need right now!
+        <h2>This goes out to all the people working at Ullsteinhaus:</h2>
+        <p>Haven't you had those moments in the last weeks where you sat there sweating and thinking: 
+        well, some icecream would be just what I need right now!<br>
         Or think about the upcoming winter and the need for some cookies that just comes along with it.
-        Especially in those times of Corona, where it is best not to get too close to each other.
+        Especially in those times of Corona, where it is best not to get too close to each other. <br>
         Well - in this building there are people working who actually know how to program drones. 
-        And who are experimenting with them!
+        And who are experimenting with them!<br>
         Sign here if you think some of the programmers working and 
         learning here should spend a fair amount of their time on programming 
-        those drones to deliver some icecream, or some cookies...
+        those drones to deliver some icecream, or some cookies...<br>
         Think about how much more amazing being in this building could be! 
-        And how much fun for the Spiced-Students...🐤</p>
-        <!--picture-->
-        
-        <form method='POST' style="display: flex; flex-direction: column; justify-content: space-between; width: 40%; height: 50%;">
-            <input type='text' id='firstname' name='firstname' placeholder='First Name'>
-            <input type='text' id='lastname' name='lastname' placeholder='Last Name'>
-            <canvas id="canvas"></canvas>
-            <input name='signature' id='signature' type="hidden" value={{signatureD}}><span>Please sign here</span> -->
+        And how much fun for the Spiced-Students..</p>
+
+<img id ="unsplash" src="/unsplash.jpg" alt="Fernsehturm mit Dronen">
+
+                <form method='POST' style="display: flex; flex-direction: column; justify-content: space-between; width: 40%; height: 50%;">
+            <canvas id="canvas">
+            <input name='signature' id='signature' type="hidden">
+            </canvas>
+            <p id="sign">Please sign here</p>
             <input type="hidden" name="_csrf" value="{{csrfToken}}">
-            <button id="submit-button"> Submit</submit>
+            <button id="submit-button">Submit</submit>
         </form>
+        </div>
