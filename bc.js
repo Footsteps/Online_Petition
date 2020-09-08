@@ -9,3 +9,5 @@ compare = promisify(compare);
 module.exports.compare = compare;
 module.exports.hash = (plainTextPasswordFromUser) =>
     genSalt().then((salt) => hash(plainTextPasswordFromUser, salt));
+
+//https://www.codota.com/code/javascript/functions/bcrypt/compare
