@@ -11,7 +11,15 @@ We cannot even begin to tell you how grateful we would be.
 
 <p>Yours sincerely...</p>
 <div class="signers">{{#rows}}
-    
-<h3>{{first}} {{last}}</h3>
+{{#if url}}
+<p>
+ <a href = {{url}}> {{first}} {{last}}</a> {{age}} 
+ <a id="click" href="{{city}}">{{city}}</a> 
+ </p>
+ {{else}}
+ <p>
+ {{first}} {{last}} {{age}} {{city}}
+ </p>
+ {{/if}}
 {{/rows}}
 </div>
