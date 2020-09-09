@@ -72,7 +72,7 @@ app.get("/", (req, res) => {
             console.log("err in get profiles: ", err);
         });
 
-    */
+
     db.getEmAll()
         .then(({ rows }) => {
             console.log("all tables: ", rows);
@@ -80,6 +80,7 @@ app.get("/", (req, res) => {
         .catch((err) => {
             console.log("err in get profiles: ", err);
         });
+        */
     //console.log("req.session: ", req.session);
 
     //console.log("get request to root route happend!!!");
