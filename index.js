@@ -39,16 +39,37 @@ app.use(function (req, res, next) {
     next();
 });
 
-///middleware for errors
-app.use(function (err, req, res, next) {
-    res.status(err.status || 500);
-    res.render("error", {
-        message: err.message,
-        error: err,
-    });
-});
 ////////////////////////////////ROOT ROUTE //////////////////////////////////////
 app.get("/", (req, res) => {
+    db.getTableSigners()
+        .then(({ rows }) => {
+            for (let i = 0; i < rows.length; i++) {
+                console.log("signers table: ", rows);
+            }
+        })
+        .catch((err) => {
+            console.log("err in getSigners: ", err);
+        });
+    db.getTableUsers()
+        .then(({ rows }) => {
+            for (let i = 0; i < rows.length; i++) {
+                console.log("users table: ", rows);
+            }
+        })
+        .catch((err) => {
+            console.log("err in getSigners: ", err);
+        });
+
+    db.getTableProfiles()
+        .then(({ rows }) => {
+            for (let i = 0; i < rows.length; i++) {
+                console.log("profiles table: ", rows);
+            }
+        })
+        .catch((err) => {
+            console.log("err in get profiles: ", err);
+        });
+
     //console.log("get request to root route happend!!!");
     res.redirect("/register");
 });
@@ -90,7 +111,7 @@ app.post("/register", (req, res) => {
                     //set id as cookie
                     req.session.userId = userId;
                     console.log("req.session: ", req.session);
-                    res.redirect("petition");
+                    res.redirect("profile");
                 })
                 .catch((err) => {
                     console.log("err in register: ", err);
@@ -99,6 +120,47 @@ app.post("/register", (req, res) => {
     }
 
     //console.log("req.session: ", req.session);
+
+    //console.log("req.session after adding something: ", req.session);
+});
+
+//////////////////////////PROFILE ROUTE//////////////////////////
+app.get("/profile", (req, res) => {
+    console.log("get request to profile route happend!!!");
+    res.render("profile", {
+        layout: "main",
+    });
+});
+
+app.post("/profile", (req, res) => {
+    console.log("post request to profile route happend!!!");
+    //console.log("req.body: ", req.body);
+    let age = req.body.age;
+    //console.log(age);
+    let city = req.body.city;
+    //console.log(city);
+    let url = req.body.url;
+    //console.log(rul);
+    let user_id = req.session.userId;
+    console.log(user_id);
+    console.log("req.body: ", req.body);
+    //console.log("req.session: ", req.session);
+    if (url.startsWith("www")) {
+        console.log("url starts with www");
+        url = "https://" + url;
+        console.log(url);
+    }
+    if (url.startsWith("http")) {
+        console.log("url starts with http");
+
+        db.profiling(age, city, url, user_id)
+            .then(() => {
+                res.redirect("/petition");
+            })
+            .catch((err) => {
+                console.log("err in profiling: ", err);
+            });
+    }
 
     //console.log("req.session after adding something: ", req.session);
 });
@@ -120,7 +182,7 @@ app.post("/petition", (req, res) => {
     console.log("req.body: ", req.body);
     //console.log("req.body: ", req.body);
     let sign = req.body.signature;
-    //console.log(sign);
+    console.log(sign);
     let user_id = req.session.userId;
     let signerId;
 
@@ -159,51 +221,73 @@ app.post("/petition", (req, res) => {
 app.get("/signed", (req, res) => {
     //console.log("get request to signed route happend!!!");
     //res.render("signed", {});
-    db.getSignature(req.session.id)
-        .then(({ rows }) => {
-            //console.log(rows);
-            let sign = rows[0].sign;
-            //console.log(sign);
-            //console.log(typeof rows);
-            //console.log(typeof sign);
+    if (!req.session.signed) {
+        res.redirect("/petition");
+    } else {
+        db.getSignature(req.session.id)
+            .then(({ rows }) => {
+                //console.log(rows);
+                let sign = rows[0].sign;
+                //console.log(sign);
+                //console.log(typeof rows);
+                //console.log(typeof sign);
 
-            res.render("signed", {
-                sign,
+                res.render("signed", {
+                    sign,
+                });
+            })
+            .catch((err) => {
+                console.log("err in getSignature: ", err);
             });
-        })
-        .catch((err) => {
-            console.log("err in getSignature: ", err);
-        });
-    /*
-    db.getTable()
-        .then(({ rows }) => {
-            for (let i = 0; i < rows.length; i++) {
-                console.log("rows: ", rows);
-                console.log("id: ", rows[i].id);
-                console.log("firstname: ", rows[i].firstname);
-                console.log("lastname: ", rows[i].lastname);
-                console.log("signature: ", rows[i].sign);
-            }
-        })
-        .catch((err) => {
-            console.log("err in getSigners: ", err);
-        });
-        */
+    }
 });
 
 ////////////////////////////////SIGNERS ROUTE //////////////////////////////////////
 app.get("/signers", (req, res) => {
     //console.log("get request to signers route happend!!!");
-
-    db.getSigners()
-        .then(({ rows }) => {
-            res.render("signers", {
-                rows: rows,
+    if (!req.session.signed) {
+        res.redirect("/petition");
+    } else {
+        db.getSigners()
+            .then(({ rows }) => {
+                res.render("signers", {
+                    rows: rows,
+                });
+                //console.log("get Signers: ", rows);
+                /*
+            for (let i = 0; i < rows.length; i++) {
+                console.log(rows[i].first);
+                console.log(rows[i].last);
+                console.log(rows[i].age);
+                console.log(rows[i].url);
+                console.log(rows[i].city);
+            }
+            */
+            })
+            .catch((err) => {
+                console.log("err in getSigners: ", err);
             });
-            console.log("data: ", rows);
+    } //closes else
+});
+
+////////////////////////////////city ROUTE //////////////////////////////////////
+app.get("/signers/:city", (req, res) => {
+    //console.log("get request to signers route happend!!!");
+    //const city = req.params.city;
+    //console.log(req.params);
+    //console.log(city);
+    db.getCities(req.params.city)
+        .then(({ rows }) => {
+            console.log("rows: ", rows);
+            let city = rows[0].city;
+            console.log(city);
+            res.render("city", {
+                rows: rows,
+                city,
+            });
         })
         .catch((err) => {
-            console.log("err in getSigners: ", err);
+            console.log("err in getCities: ", err);
         });
 });
 
