@@ -41,19 +41,21 @@ app.use(function (req, res, next) {
 
 ////////////////////////////////ROOT ROUTE //////////////////////////////////////
 app.get("/", (req, res) => {
-    db.getTableSigners()
+    /*
+    db.getTableUsers()
         .then(({ rows }) => {
             for (let i = 0; i < rows.length; i++) {
-                console.log("signers table: ", rows);
+                console.log("users table: ", rows);
             }
         })
         .catch((err) => {
             console.log("err in getSigners: ", err);
         });
-    db.getTableUsers()
+
+    db.getTableSigners()
         .then(({ rows }) => {
             for (let i = 0; i < rows.length; i++) {
-                console.log("users table: ", rows);
+                console.log("signers table: ", rows);
             }
         })
         .catch((err) => {
@@ -69,6 +71,16 @@ app.get("/", (req, res) => {
         .catch((err) => {
             console.log("err in get profiles: ", err);
         });
+
+    */
+    db.getEmAll()
+        .then(({ rows }) => {
+            console.log("all tables: ", rows);
+        })
+        .catch((err) => {
+            console.log("err in get profiles: ", err);
+        });
+    //console.log("req.session: ", req.session);
 
     //console.log("get request to root route happend!!!");
     res.redirect("/register");
@@ -100,7 +112,7 @@ app.post("/register", (req, res) => {
             error: "Oh, something went wrong! Please try again :) ",
         });
     } else {
-        console.log("req.body: ", req.body);
+        //console.log("req.body: ", req.body);
         //console.log(req.body.password);
 
         bc.hash(req.body.password).then((salted) => {
@@ -145,14 +157,14 @@ app.post("/profile", (req, res) => {
     console.log(user_id);
     console.log("req.body: ", req.body);
     //console.log("req.session: ", req.session);
+
     if (url.startsWith("www")) {
         console.log("url starts with www");
         url = "https://" + url;
         console.log(url);
     }
-    if (url.startsWith("http")) {
-        console.log("url starts with http");
-
+    if (url.startsWith("http") || !req.body.url) {
+        console.log("url starts with http or is void");
         db.profiling(age, city, url, user_id)
             .then(() => {
                 res.redirect("/petition");
@@ -352,6 +364,89 @@ app.post("/login", (req, res) => {
     //console.log("req.session after adding something: ", req.session);
 });
 
+//////////////////////////////edit////////////////////////////////////////
+app.get("/edit", (req, res) => {
+    //console.log("get request to edit route happend!!!");
+    if (!req.session.signed) {
+        res.redirect("/petition");
+    } else {
+        let user_id = req.session.userId;
+        db.editGet(user_id)
+            .then(({ rows }) => {
+                //console.log("rows in getEdit", rows);
+                res.render("edit", {
+                    rows: rows,
+                });
+            })
+            .catch((err) => {
+                console.log("err in editGet: ", err);
+            }); //closes error; //closes editGet
+    } //closes else
+});
+
+app.post("/edit", (req, res) => {
+    console.log("post request to login route happend!!!");
+    let first = req.body.first;
+    console.log("1", first);
+    let last = req.body.last;
+    console.log("2", last);
+    let email = req.body.email;
+    console.log("email", email);
+    let pw = req.body.pw;
+    console.log("pw", pw);
+    let age = req.body.age;
+    console.log("age", age);
+    let city = req.body.city;
+    console.log("city", city);
+    let url = req.body.url;
+    console.log("url", url);
+    /*
+    //console.log("req.body: ", req.body);
+    let hash;
+
+    if (emailLogin === "" || passwordLogin === "") {
+        res.render("login", {
+            error: "Oh, something went wrong! Please try again :) ",
+        });
+    } else {
+        db.email(req.body.email)
+            .then(({ rows }) => {
+                //console.log("rows: ", rows[0].email);
+                //console.log(rows[0].password);
+                //console.log(passwordLogin);
+                //console.log(rows[0].id);
+                hash = rows[0].password;
+
+                bc.compare(passwordLogin, rows[0].password).then((result) => {
+                    if (result == true) {
+                        console.log("password works!!!!");
+                        req.session.userId = rows[0].id;
+                        //console.log("req.session: ", req.session);
+                        if (!req.session.signed) {
+                            res.render("petition", {
+                                layout: "main",
+                            });
+                        } else {
+                            res.redirect("/signed");
+                        } //closes if-else-cookie
+                    } else {
+                        res.render("login", {
+                            error:
+                                "Oh, something went wrong! Please try again :) ",
+                        });
+                    }
+                });
+            })
+            .catch((err) => {
+                console.log("err in email: ", err);
+            });
+    }
+*/
+    //console.log("req.session: ", req.session);
+
+    //console.log("req.session after adding something: ", req.session);
+});
+
 /////////////////////////////////protecting from iframe///////////////////////////////
 
 app.use(function (req, res, next) {
@@ -359,4 +454,4 @@ app.use(function (req, res, next) {
     next();
 });
 
-app.listen(8080, () => console.log("petition server is running :)"));
+app.listen(process.env.PORT || 8080, () => console.log("Server Listening"));
