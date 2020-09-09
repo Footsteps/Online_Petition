@@ -26,7 +26,7 @@ p {
 
 .names {
     display: flex;
-    width: 150%;
+    width: 500%;
     margin-left: 50%;
     text-align: center;
 }
@@ -81,6 +81,6 @@ button {
 
 .signers {
     border: 3px solid #440047;
-    margin-left: 30%;
-    margin-right: 30%;
+    margin-left: 5%;
+    margin-right: 5%;
 }
