@@ -1,12 +1,14 @@
+{{#if error}}
+<h3>{{error}}</h3>
+{{/if}}
+
 <div>
 <h1>Hi! If you want to update any information you've given us so far, here's the chance!</h1>
-        
-       
 
 <img id ="unsplash" src="/unsplash.jpg" alt="Fernsehturm mit Dronen">
 
 <form method='POST' style="display: flex; flex-direction: column; justify-content: space-between; width: 40%; height: 50%;">
-         <div class = "edit">{{#rows}}
+        <div class = "edit">{{#rows}}
         <input type='text' id="first" name='first' value={{first}} style="color: #fbecec;"><span>Firstname</span><br>
         <input type='text' id='last' name='last' value={{last}} style="color: #fbecec;"><span>Lastname</span><br>
         <input type='text' id='email' name='email' value={{email}} style="color: #fbecec;"><span>E-Mail</span><br>
