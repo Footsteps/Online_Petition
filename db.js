@@ -8,6 +8,12 @@ const db = spicedPg(
 //spiced pg is looking in my database --> actors
 //table --> cities
 
+//////////////my cookies - just to remember///////////////////////
+//cookie userId: req.session.userId; set with register
+//cookie with signature: req.session.id; set with addSignature
+//cookie that somebody has signed: req.session.signed; set with addSignature
+//remove cookie: req.session.userId= null
+
 ////////////////////checking the tables///////////////////////////
 
 module.exports.getTableSigners = () => {
@@ -56,6 +62,10 @@ ON signers.user_id = user_profiles.user_id;`);
 
 module.exports.getSignature = (id) => {
     return db.query(`SELECT sign FROM signers WHERE id = $1`, [id]);
+};
+
+module.exports.deleteSignature = (id) => {
+    return db.query(`DELETE FROM signers WHERE user_id = $1`, [id]);
 };
 
 ////////////////registration////////////////////////////////
