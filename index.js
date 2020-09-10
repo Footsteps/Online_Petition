@@ -7,6 +7,7 @@ const cookieSession = require("cookie-session");
 const csurf = require("csurf");
 
 //require the files I need
+//const { SESSION_SECRET: sessionSecret } = require("/.secrets");
 const bc = require("./bc");
 const db = require("./db");
 app.use(express.static("./public"));
@@ -39,6 +40,12 @@ app.use(function (req, res, next) {
     next();
 });
 
+//////////////my cookies - just to remember///////////////////////
+//cookie userId: req.session.userId; set with register
+//cookie with signature: req.session.id; set with addSignature
+//cookie that somebody has signed: req.session.signed; set with addSignature
+//remove cookie: req.session.userId= null
+
 ////////////////////////////////ROOT ROUTE //////////////////////////////////////
 app.get("/", (req, res) => {
     /*
@@ -51,7 +58,6 @@ app.get("/", (req, res) => {
         .catch((err) => {
             console.log("err in getSigners: ", err);
         });
-
     db.getTableSigners()
         .then(({ rows }) => {
             for (let i = 0; i < rows.length; i++) {
@@ -61,7 +67,6 @@ app.get("/", (req, res) => {
         .catch((err) => {
             console.log("err in getSigners: ", err);
         });
-
     db.getTableProfiles()
         .then(({ rows }) => {
             for (let i = 0; i < rows.length; i++) {
@@ -71,8 +76,7 @@ app.get("/", (req, res) => {
         .catch((err) => {
             console.log("err in get profiles: ", err);
         });
-
-
+   */
     db.getEmAll()
         .then(({ rows }) => {
             console.log("all tables: ", rows);
@@ -80,7 +84,7 @@ app.get("/", (req, res) => {
         .catch((err) => {
             console.log("err in get profiles: ", err);
         });
-        */
+
     //console.log("req.session: ", req.session);
 
     //console.log("get request to root route happend!!!");
@@ -117,13 +121,13 @@ app.post("/register", (req, res) => {
         //console.log(req.body.password);
 
         bc.hash(req.body.password).then((salted) => {
-            console.log("salted: ", salted);
+            //console.log("salted: ", salted);
             db.register(req.body.first, req.body.last, req.body.email, salted)
                 .then((id) => {
                     userId = id.rows[0].id;
                     //set id as cookie
                     req.session.userId = userId;
-                    console.log("req.session: ", req.session);
+                    //console.log("req.session: ", req.session);
                     res.redirect("profile");
                 })
                 .catch((err) => {
@@ -291,9 +295,9 @@ app.get("/signers/:city", (req, res) => {
     //console.log(city);
     db.getCities(req.params.city)
         .then(({ rows }) => {
-            console.log("rows: ", rows);
+            //console.log("rows: ", rows);
             let city = rows[0].city;
-            console.log(city);
+            //console.log(city);
             res.render("city", {
                 rows: rows,
                 city,
@@ -366,8 +370,9 @@ app.post("/login", (req, res) => {
 });
 
 //////////////////////////////edit////////////////////////////////////////
+
 app.get("/edit", (req, res) => {
-    //console.log("get request to edit route happend!!!");
+    console.log("get request to edit route happend!!!");
     if (!req.session.signed) {
         res.redirect("/petition");
     } else {
@@ -387,13 +392,15 @@ app.get("/edit", (req, res) => {
 
 app.post("/edit", (req, res) => {
     console.log("post request to login route happend!!!");
+    let user_id = req.session.userId;
+    console.log(user_id);
     let first = req.body.first;
     console.log("1", first);
     let last = req.body.last;
     console.log("2", last);
     let email = req.body.email;
     console.log("email", email);
-    let pw = req.body.pw;
+    let pw = req.body.password;
     console.log("pw", pw);
     let age = req.body.age;
     console.log("age", age);
@@ -401,51 +408,50 @@ app.post("/edit", (req, res) => {
     console.log("city", city);
     let url = req.body.url;
     console.log("url", url);
-    /*
-    //console.log("req.body: ", req.body);
     let hash;
 
-    if (emailLogin === "" || passwordLogin === "") {
-        res.render("login", {
-            error: "Oh, something went wrong! Please try again :) ",
-        });
-    } else {
-        db.email(req.body.email)
-            .then(({ rows }) => {
-                //console.log("rows: ", rows[0].email);
-                //console.log(rows[0].password);
-                //console.log(passwordLogin);
-                //console.log(rows[0].id);
-                hash = rows[0].password;
-
-                bc.compare(passwordLogin, rows[0].password).then((result) => {
-                    if (result == true) {
-                        console.log("password works!!!!");
-                        req.session.userId = rows[0].id;
-                        //console.log("req.session: ", req.session);
-                        if (!req.session.signed) {
-                            res.render("petition", {
-                                layout: "main",
-                            });
-                        } else {
-                            res.redirect("/signed");
-                        } //closes if-else-cookie
-                    } else {
-                        res.render("login", {
-                            error:
-                                "Oh, something went wrong! Please try again :) ",
-                        });
-                    }
-                });
+    if (pw == "") {
+        console.log("password did not get changed");
+        db.editUsers(user_id, first, last, email)
+            .then(() => {
+                db.editProfiles(user_id, age, city, url)
+                    .then((results) => {
+                        //console.log(results);
+                        //console.log("this worked!!!");
+                        res.redirect("/signed");
+                    })
+                    .catch((err) => {
+                        console.log("err in editProfiles: ", err);
+                    }); //closes error; //closes editGet
             })
             .catch((err) => {
-                console.log("err in email: ", err);
-            });
-    }
-*/
-    //console.log("req.session: ", req.session);
+                console.log("err in editUsers: ", err);
+            }); //closes error; //closes editGet
+    } else {
+        console.log("password did change!");
+        console.log(pw);
+        hast = pw;
+        bc.hash(req.body.password).then((salted) => {
+            console.log("salted pw: ", salted);
 
-    //console.log("req.session after adding something: ", req.session);
+            db.editUsersWithPw(user_id, first, last, email, salted)
+                .then(() => {
+                    //console.log("this worked!!");
+                    db.editProfilesPwChanged(user_id, age, city, url)
+                        .then((results) => {
+                            console.log(results);
+                            console.log("this worked!!!");
+                            //res.redirect("/signed");
+                        })
+                        .catch((err) => {
+                            console.log("err in editProfiles: ", err);
+                        }); //closes error; //closes editGet
+                })
+                .catch((err) => {
+                    console.log("err in edit users with password: ", err);
+                });
+        });
+    }
 });
 
 /////////////////////////////////protecting from iframe///////////////////////////////
