@@ -125,3 +125,9 @@ button {
     font-size: 16px;
     border: none;
 }
+
+::placeholder {
+    /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: #fbecec;
+    opacity: 1; /* Firefox */
+}
