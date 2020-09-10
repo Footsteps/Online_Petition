@@ -84,3 +84,37 @@ button {
     margin-left: 5%;
     margin-right: 5%;
 }
+
+.edit {
+    padding: 200px;
+    margin: 50px;
+}
+
+#link {
+    margin: 20px;
+    position: relative;
+}
+
+#signers {
+    position: absolute;
+    left: 30%;
+    top: 30%;
+}
+
+#edit {
+    position: absolute;
+    top: 75%;
+    left: 30%;
+}
+#delete-button {
+    background-color: #fbecec;
+    position: absolute;
+    left: 18.5%;
+    top: 120%;
+    width: 150px;
+    color: #440047;
+    text-decoration: underline;
+    width: 400px;
+    font-size: 16px;
+    border: none;
+}
