@@ -168,6 +168,9 @@ app.post("/profile", (req, res) => {
     console.log("req.body: ", req.body);
     //console.log("req.session: ", req.session);
 
+    city = city.split(" ").join("_");
+    console.log("city after split: ", city);
+
     if (url.startsWith("www")) {
         console.log("url starts with www");
         url = "https://" + url;
@@ -208,6 +211,7 @@ app.get("/petition", (req, res) => {
 });
 
 app.post("/petition", (req, res) => {
+    console.log("post request to petition rout happend!!!");
     console.log("req.body: ", req.body);
     //console.log("req.body: ", req.body);
     let sign = req.body.signature;
@@ -229,7 +233,7 @@ app.post("/petition", (req, res) => {
             //console.log("req.session: ", req.session);
             //set cookie for signing
             req.session.signed = "signed!";
-            //console.log("req.session: ", req.session);
+            console.log("req.session: ", req.session);
 
             res.redirect("/signed");
         })
@@ -377,21 +381,19 @@ app.post("/login", (req, res) => {
     } else {
         db.email(req.body.email)
             .then(({ rows }) => {
-                //console.log("rows: ", rows[0].email);
-                //console.log(rows[0].password);
+                //console.log("rows: ", results);
+                //console.log("password: ", results.rows[0].password);
                 //console.log(passwordLogin);
-                //console.log(rows[0].id);
-                hash = rows[0].password;
+                //console.log(results.rows[0].id);
+                //hashed = results.rows[0].password;
 
                 bc.compare(passwordLogin, rows[0].password).then((result) => {
                     if (result == true) {
                         console.log("password works!!!!");
                         req.session.userId = rows[0].id;
-                        //console.log("req.session: ", req.session);
+                        console.log("req.session: ", req.session);
                         if (!req.session.signed) {
-                            res.render("petition", {
-                                layout: "main",
-                            });
+                            res.redirect("/petition");
                         } else {
                             res.redirect("/signed");
                         } //closes if-else-cookie
@@ -508,17 +510,9 @@ app.post("/edit", (req, res) => {
         }
     } else {
         let user_id = req.session.userId;
-        db.editGet(user_id)
-            .then(({ rows }) => {
-                console.log("rows in getEdit", rows);
-                res.render("edit", {
-                    rows: rows,
-                    error: "Ooops, something went wrong! Please try again.",
-                });
-            })
-            .catch((err) => {
-                console.log("err in editGet: ", err);
-            });
+        res.redirect("/edit", {
+            error: "Ooops, something went wrong! Please try again.",
+        });
     }
 });
 
