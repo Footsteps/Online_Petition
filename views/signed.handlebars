@@ -4,13 +4,12 @@
 
         
         <img class="signature" src="{{sign}}" alt="Description of my picture" />
+       
+<div id="link">
 
-       <div id="link">
-        <a id="signers" href="/signers/">Click here to see who has signed yet with you</a><br>
+        <a id="signers" href="/signers/">Click here to see who has signed as well!</a><br>
         <a id="edit" href="/edit/">Click here to edit your profile</a>
-        
-
-        <form method='POST'>
+        <form method ='post' action='/delete/signature'>
         <button id="delete-button">Click here to delete your signature </button>
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
         </form>    
