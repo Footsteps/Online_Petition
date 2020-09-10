@@ -6,6 +6,8 @@ const handlebars = require("express-handlebars");
 const cookieSession = require("cookie-session");
 const csurf = require("csurf");
 
+//export app//
+module.exports.app = app;
 //require the files I need
 //const { SESSION_SECRET: sessionSecret } = require("/.secrets");
 const bc = require("./bc");
@@ -39,12 +41,6 @@ app.use(function (req, res, next) {
     res.locals.csrfToken = req.csrfToken();
     next();
 });
-
-//////////////my cookies - just to remember///////////////////////
-//cookie userId: req.session.userId; set with register
-//cookie with signature: req.session.id; set with addSignature
-//cookie that somebody has signed: req.session.signed; set with addSignature
-//remove cookie: req.session.userId= null
 
 ////////////////////////////////ROOT ROUTE //////////////////////////////////////
 app.get("/", (req, res) => {
@@ -237,6 +233,7 @@ app.post("/petition", (req, res) => {
 
 app.get("/signed", (req, res) => {
     //console.log("get request to signed route happend!!!");
+    console.log("req.session.userId", req.session.userId);
     //res.render("signed", {});
     if (!req.session.signed) {
         res.redirect("/petition");
@@ -259,6 +256,31 @@ app.get("/signed", (req, res) => {
     }
 });
 
+app.post("/signed", (req, res) => {
+    console.log("post request to sign route happend!!!");
+    console.log("req.session.userId", req.session.userId);
+    console.log("req.session.id", req.session.id);
+    console.log("req.session.signed", req.session.signed);
+
+    db.deleteSignature(req.session.userId)
+        .then(({ rows }) => {
+            console.log("signature deleted!");
+            req.session.id = null;
+            req.session.signed = null;
+            console.log(req.session.id);
+            console.log(req.session.signed);
+            res.redirect("/delete");
+        })
+        .catch((err) => {
+            console.log("err in delete Signature: ", err);
+        });
+});
+
+////////////////////////DELETE///////////////////////////////////////
+app.get("/delete", (req, res) => {
+    console.log("delete route received a get request");
+    res.redirect("/petition");
+});
 ////////////////////////////////SIGNERS ROUTE //////////////////////////////////////
 app.get("/signers", (req, res) => {
     //console.log("get request to signers route happend!!!");
@@ -461,4 +483,6 @@ app.use(function (req, res, next) {
     next();
 });
 
-app.listen(process.env.PORT || 8080, () => console.log("Server Listening"));
+if (require.main == module) {
+    app.listen(process.env.PORT || 8080, () => console.log("Server Listening"));
+}
