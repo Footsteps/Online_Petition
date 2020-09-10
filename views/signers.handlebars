@@ -13,13 +13,15 @@ We cannot even begin to tell you how grateful we would be.
 <div class="signers">{{#rows}}
 {{#if url}}
 <p>
- <a href = {{url}}> {{first}} {{last}}</a> {{age}} 
+ <a href = {{url}} target="_blank"> {{first}} {{last}}</a>   {{age}}
  <a id="click" href="{{city}}">{{city}}</a> 
  </p>
  {{else}}
  <p>
- {{first}} {{last}} {{age}} {{city}}
+ {{first}} {{last}}{{age}}{{city}}
  </p>
  {{/if}}
 {{/rows}}
 </div>
+<p>Click on the name to jump to the signer's given webpage.</p>
+<p>Click on the office to see who else from your office signed up!</p>
