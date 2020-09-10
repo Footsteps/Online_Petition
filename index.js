@@ -84,7 +84,11 @@ app.get("/", (req, res) => {
     //console.log("req.session: ", req.session);
 
     //console.log("get request to root route happend!!!");
-    res.redirect("/register");
+    if (!req.session.userId && req.url != "/login" && req.url != "/register") {
+        res.redirect("/register");
+    } else {
+        res.redirect("/signed");
+    }
 });
 
 //////////////////registration//////////////////////////////////////
@@ -140,9 +144,14 @@ app.post("/register", (req, res) => {
 //////////////////////////PROFILE ROUTE//////////////////////////
 app.get("/profile", (req, res) => {
     console.log("get request to profile route happend!!!");
-    res.render("profile", {
-        layout: "main",
-    });
+
+    if (!req.session.userId && req.url != "/login" && req.url != "/register") {
+        res.redirect("/register");
+    } else {
+        res.render("profile", {
+            layout: "main",
+        });
+    } //closes else userId
 });
 
 app.post("/profile", (req, res) => {
@@ -181,14 +190,17 @@ app.post("/profile", (req, res) => {
 ////////////////////////////////PETITION ROUTE //////////////////////////////////////
 app.get("/petition", (req, res) => {
     //console.log("get request to petition route happend!!!");
-
-    if (!req.session.signed) {
-        res.render("petition", {
-            layout: "main",
-        });
+    if (!req.session.userId && req.url != "/login" && req.url != "/register") {
+        res.redirect("/register");
     } else {
-        res.redirect("/signed");
-    } //closes if-else-cookie
+        if (!req.session.signed) {
+            res.render("petition", {
+                layout: "main",
+            });
+        } else {
+            res.redirect("/signed");
+        } //closes if-else-cookie
+    } //closes else userId
 });
 
 app.post("/petition", (req, res) => {
@@ -234,30 +246,34 @@ app.post("/petition", (req, res) => {
 app.get("/signed", (req, res) => {
     //console.log("get request to signed route happend!!!");
     console.log("req.session.userId", req.session.userId);
-    //res.render("signed", {});
-    if (!req.session.signed) {
-        res.redirect("/petition");
+    if (!req.session.userId && req.url != "/login" && req.url != "/register") {
+        res.redirect("/register");
     } else {
-        db.getSignature(req.session.id)
-            .then(({ rows }) => {
-                //console.log(rows);
-                let sign = rows[0].sign;
-                //console.log(sign);
-                //console.log(typeof rows);
-                //console.log(typeof sign);
+        //res.render("signed", {});
+        if (!req.session.signed) {
+            res.redirect("/petition");
+        } else {
+            db.getSignature(req.session.id)
+                .then(({ rows }) => {
+                    //console.log(rows);
+                    let sign = rows[0].sign;
+                    //console.log(sign);
+                    //console.log(typeof rows);
+                    //console.log(typeof sign);
 
-                res.render("signed", {
-                    sign,
+                    res.render("signed", {
+                        sign,
+                    });
+                })
+                .catch((err) => {
+                    console.log("err in getSignature: ", err);
                 });
-            })
-            .catch((err) => {
-                console.log("err in getSignature: ", err);
-            });
-    }
+        }
+    } //closes else userId
 });
 
-app.post("/signed", (req, res) => {
-    console.log("post request to sign route happend!!!");
+app.post("/delete/signature", (req, res) => {
+    console.log("post request to delete/signed route happend!!!");
     console.log("req.session.userId", req.session.userId);
     console.log("req.session.id", req.session.id);
     console.log("req.session.signed", req.session.signed);
@@ -265,35 +281,34 @@ app.post("/signed", (req, res) => {
     db.deleteSignature(req.session.userId)
         .then(({ rows }) => {
             console.log("signature deleted!");
-            req.session.id = null;
+
             req.session.signed = null;
-            console.log(req.session.id);
+
             console.log(req.session.signed);
-            res.redirect("/delete");
+            res.redirect("/petition");
         })
         .catch((err) => {
             console.log("err in delete Signature: ", err);
         });
 });
 
-////////////////////////DELETE///////////////////////////////////////
-app.get("/delete", (req, res) => {
-    console.log("delete route received a get request");
-    res.redirect("/petition");
-});
 ////////////////////////////////SIGNERS ROUTE //////////////////////////////////////
+
 app.get("/signers", (req, res) => {
-    //console.log("get request to signers route happend!!!");
-    if (!req.session.signed) {
-        res.redirect("/petition");
+    if (!req.session.userId && req.url != "/login" && req.url != "/register") {
+        res.redirect("/register");
     } else {
-        db.getSigners()
-            .then(({ rows }) => {
-                res.render("signers", {
-                    rows: rows,
-                });
-                //console.log("get Signers: ", rows);
-                /*
+        //console.log("get request to signers route happend!!!");
+        if (!req.session.signed) {
+            res.redirect("/petition");
+        } else {
+            db.getSigners()
+                .then(({ rows }) => {
+                    res.render("signers", {
+                        rows: rows,
+                    });
+                    //console.log("get Signers: ", rows);
+                    /*
             for (let i = 0; i < rows.length; i++) {
                 console.log(rows[i].first);
                 console.log(rows[i].last);
@@ -302,32 +317,37 @@ app.get("/signers", (req, res) => {
                 console.log(rows[i].city);
             }
             */
-            })
-            .catch((err) => {
-                console.log("err in getSigners: ", err);
-            });
-    } //closes else
+                })
+                .catch((err) => {
+                    console.log("err in getSigners: ", err);
+                });
+        } //closes else
+    } //closes else cookie UserId
 });
 
 ////////////////////////////////city ROUTE //////////////////////////////////////
 app.get("/signers/:city", (req, res) => {
-    //console.log("get request to signers route happend!!!");
-    //const city = req.params.city;
-    //console.log(req.params);
-    //console.log(city);
-    db.getCities(req.params.city)
-        .then(({ rows }) => {
-            //console.log("rows: ", rows);
-            let city = rows[0].city;
-            //console.log(city);
-            res.render("city", {
-                rows: rows,
-                city,
+    if (!req.session.userId && req.url != "/login" && req.url != "/register") {
+        res.redirect("/register");
+    } else {
+        //console.log("get request to signers route happend!!!");
+        const city = req.params.city;
+        //console.log(req.params);
+        console.log(city);
+        db.getCities(req.params.city)
+            .then(({ rows }) => {
+                //console.log("rows: ", rows);
+                let city = rows[0].city;
+                //console.log(city);
+                res.render("city", {
+                    rows: rows,
+                    city,
+                });
+            })
+            .catch((err) => {
+                console.log("err in getCities: ", err);
             });
-        })
-        .catch((err) => {
-            console.log("err in getCities: ", err);
-        });
+    } // closes else userId-cookie
 });
 
 //////////////////////////////login////////////////////////////////////////
@@ -395,21 +415,25 @@ app.post("/login", (req, res) => {
 
 app.get("/edit", (req, res) => {
     console.log("get request to edit route happend!!!");
-    if (!req.session.signed) {
-        res.redirect("/petition");
+    if (!req.session.userId && req.url != "/login" && req.url != "/register") {
+        res.redirect("/register");
     } else {
-        let user_id = req.session.userId;
-        db.editGet(user_id)
-            .then(({ rows }) => {
-                //console.log("rows in getEdit", rows);
-                res.render("edit", {
-                    rows: rows,
-                });
-            })
-            .catch((err) => {
-                console.log("err in editGet: ", err);
-            }); //closes error; //closes editGet
-    } //closes else
+        if (!req.session.signed) {
+            res.redirect("/petition");
+        } else {
+            let user_id = req.session.userId;
+            db.editGet(user_id)
+                .then(({ rows }) => {
+                    //console.log("rows in getEdit", rows);
+                    res.render("edit", {
+                        rows: rows,
+                    });
+                })
+                .catch((err) => {
+                    console.log("err in editGet: ", err);
+                }); //closes error; //closes editGet
+        } //closes else
+    } //closes else userId cookie
 });
 
 app.post("/edit", (req, res) => {
