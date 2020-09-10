@@ -8,6 +8,8 @@ const db = spicedPg(
 //spiced pg is looking in my database --> actors
 //table --> cities
 
+////////////////////checking the tables///////////////////////////
+
 module.exports.getTableSigners = () => {
     return db.query(`SELECT * FROM signers`);
 };
@@ -29,6 +31,7 @@ ON signers.user_id = users.id
 FULL OUTER JOIN user_profiles
 ON signers.user_id = user_profiles.user_id;`);
 };
+////////////////////////SIGNATURE CODE///////////////////////////////
 
 module.exports.addSignature = (sign, user_id) => {
     return db.query(
@@ -106,6 +109,7 @@ module.exports.getCities = (city) => {
     );
 };
 
+/////////////////edit/////////////////////////////////////////
 //////////////////edits///////////////////////////////
 
 module.exports.editGet = (id) => {
@@ -120,5 +124,88 @@ module.exports.editGet = (id) => {
     WHERE users.id = $1
     `,
         [id]
+    );
+};
+//////////////////edit without password change///////////////////////////////
+
+module.exports.editUsers = (id, first, last, email) => {
+    return db.query(
+        `
+    UPDATE users SET first = $2, last = $3, email = $4 
+    WHERE users.id = $1
+    `,
+        [id, first, last, email]
+    );
+};
+
+module.exports.editProfiles = (id, age, city, url) => {
+    return db.query(
+        `
+    INSERT INTO user_profiles (user_id, age, city, url)
+    VALUES ($1, $2, $3, $4)
+    ON CONFLICT (user_id)
+    DO UPDATE SET age = $2, city = $3, url = $4
+    `,
+        [id, age, city, url]
+    );
+};
+
+//////////////////edit with password change///////////////////////////////
+
+/////////////////////////////get///////////////////////////////////
+
+module.exports.editUsersWithPw = (id, first, last, email, password) => {
+    return db.query(
+        `
+    UPDATE users SET first = $2, last = $3, email = $4, password = $5
+    WHERE users.id = $1
+    `,
+        [id, first, last, email, password]
+    );
+};
+
+////////////////////////////post - password not changed //////////////////
+module.exports.editUsers = (id, first, last, email) => {
+    return db.query(
+        `
+    UPDATE users SET first = $2, last = $3, email = $4 
+    WHERE users.id = $1
+    `,
+        [id, first, last, email]
+    );
+};
+
+module.exports.editProfiles = (id, age, city, url) => {
+    return db.query(
+        `
+    INSERT INTO user_profiles (user_id, age, city, url)
+    VALUES ($1, $2, $3, $4)
+    ON CONFLICT (user_id)
+    DO UPDATE SET age = $2, city = $3, url = $4
+    `,
+        [id, age, city, url]
+    );
+};
+
+/////////////////////post - password changed /////////////////////////////
+module.exports.editUsersWithPw = (id, first, last, email, password) => {
+    return db.query(
+        `
+    UPDATE users SET first = $2, last = $3, email = $4, password = $5
+    WHERE users.id = $1
+    `,
+        [id, first, last, email, password]
+    );
+};
+
+module.exports.editProfilesPwChanged = (id, age, city, url) => {
+    return db.query(
+        `
+    INSERT INTO user_profiles (user_id, age, city, url)
+    VALUES ($1, $2, $3, $4)
+    ON CONFLICT (user_id)
+    DO UPDATE SET age = $2, city = $3, url = $4
+    `,
+        [id, age, city, url]
     );
 };
