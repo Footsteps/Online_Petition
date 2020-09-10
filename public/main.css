@@ -74,6 +74,13 @@ button {
     padding: 30px;
 }
 
+#deleted {
+    border: 3px solid #440047;
+    width: 350px;
+    margin-left: 40%;
+    height: 200px;
+}
+
 .link {
     padding: 25px;
     font-size: 50px;
