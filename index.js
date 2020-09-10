@@ -182,6 +182,10 @@ app.post("/profile", (req, res) => {
             .catch((err) => {
                 console.log("err in profiling: ", err);
             });
+    } else {
+        res.render("profile", {
+            error: "Ooops, something went wrong! Please try again.",
+        });
     }
 
     //console.log("req.session after adding something: ", req.session);
@@ -337,8 +341,6 @@ app.get("/signers/:city", (req, res) => {
         db.getCities(req.params.city)
             .then(({ rows }) => {
                 //console.log("rows: ", rows);
-                let city = rows[0].city;
-                //console.log(city);
                 res.render("city", {
                     rows: rows,
                     city,
@@ -424,7 +426,7 @@ app.get("/edit", (req, res) => {
             let user_id = req.session.userId;
             db.editGet(user_id)
                 .then(({ rows }) => {
-                    //console.log("rows in getEdit", rows);
+                    console.log("rows in getEdit", rows);
                     res.render("edit", {
                         rows: rows,
                     });
@@ -437,66 +439,86 @@ app.get("/edit", (req, res) => {
 });
 
 app.post("/edit", (req, res) => {
-    console.log("post request to login route happend!!!");
+    //console.log("post request to login route happend!!!");
     let user_id = req.session.userId;
-    console.log(user_id);
+    //console.log(user_id);
     let first = req.body.first;
-    console.log("1", first);
+    //console.log("1", first);
     let last = req.body.last;
-    console.log("2", last);
+    //console.log("2", last);
     let email = req.body.email;
     console.log("email", email);
     let pw = req.body.password;
-    console.log("pw", pw);
+    //console.log("pw", pw);
     let age = req.body.age;
-    console.log("age", age);
+    //console.log("age", age);
     let city = req.body.city;
-    console.log("city", city);
+    //console.log("city", city);
     let url = req.body.url;
-    console.log("url", url);
+    //console.log("url", url);
     let hash;
 
-    if (pw == "") {
-        console.log("password did not get changed");
-        db.editUsers(user_id, first, last, email)
-            .then(() => {
-                db.editProfiles(user_id, age, city, url)
-                    .then((results) => {
-                        //console.log(results);
-                        //console.log("this worked!!!");
-                        res.redirect("/signed");
-                    })
-                    .catch((err) => {
-                        console.log("err in editProfiles: ", err);
-                    }); //closes error; //closes editGet
-            })
-            .catch((err) => {
-                console.log("err in editUsers: ", err);
-            }); //closes error; //closes editGet
-    } else {
-        console.log("password did change!");
-        console.log(pw);
-        hast = pw;
-        bc.hash(req.body.password).then((salted) => {
-            console.log("salted pw: ", salted);
-
-            db.editUsersWithPw(user_id, first, last, email, salted)
+    if (url.startsWith("www")) {
+        console.log("url starts with www");
+        url = "https://" + url;
+        console.log(url);
+    }
+    if (url.startsWith("http") || !req.body.url) {
+        if (pw == "") {
+            console.log("password did not get changed");
+            db.editUsers(user_id, first, last, email)
                 .then(() => {
-                    //console.log("this worked!!");
-                    db.editProfilesPwChanged(user_id, age, city, url)
+                    db.editProfiles(user_id, age, city, url)
                         .then((results) => {
-                            console.log(results);
-                            console.log("this worked!!!");
-                            //res.redirect("/signed");
+                            //console.log(results);
+                            //console.log("this worked!!!");
+                            res.redirect("/signed");
                         })
                         .catch((err) => {
                             console.log("err in editProfiles: ", err);
                         }); //closes error; //closes editGet
                 })
                 .catch((err) => {
-                    console.log("err in edit users with password: ", err);
+                    console.log("err in editUsers: ", err);
+                }); //closes error; //closes editGet
+        } else {
+            console.log("password did change!");
+            console.log(pw);
+            hast = pw;
+            bc.hash(req.body.password).then((salted) => {
+                console.log("salted pw: ", salted);
+
+                db.editUsersWithPw(user_id, first, last, email, salted)
+                    .then(() => {
+                        //console.log("this worked!!");
+                        db.editProfilesPwChanged(user_id, age, city, url)
+                            .then((results) => {
+                                console.log(results);
+                                console.log("this worked!!!");
+                                //res.redirect("/signed");
+                            })
+                            .catch((err) => {
+                                console.log("err in editProfiles: ", err);
+                            }); //closes error; //closes editGet
+                    })
+                    .catch((err) => {
+                        console.log("err in edit users with password: ", err);
+                    });
+            });
+        }
+    } else {
+        let user_id = req.session.userId;
+        db.editGet(user_id)
+            .then(({ rows }) => {
+                console.log("rows in getEdit", rows);
+                res.render("edit", {
+                    rows: rows,
+                    error: "Ooops, something went wrong! Please try again.",
                 });
-        });
+            })
+            .catch((err) => {
+                console.log("err in editGet: ", err);
+            });
     }
 });
 
