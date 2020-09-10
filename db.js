@@ -87,7 +87,7 @@ module.exports.getUsers = () => {
 
 ////////////////////login////////////////////////////////////
 module.exports.email = (email) => {
-    return db.query(`SELECT * FROM users WHERE email = $1`, [email]);
+    return db.query(`SELECT * FROM users WHERE email = ($1)`, [email]);
 };
 
 ///////////////////profile/////////////////////////////////////
