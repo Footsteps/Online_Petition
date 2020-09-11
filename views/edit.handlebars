@@ -9,18 +9,71 @@
 
 <img id ="unsplash" src="/unsplash.jpg" alt="Fernsehturm mit Dronen">
 
-<form method='POST' style="display: flex; flex-direction: column; justify-content: space-between; width: 40%; height: 50%;">
-        <div class = "edit">{{#rows}}
-        <input type='text' id="first" name='first' value="{{first}}" autocomplete="off"><span>Firstname</span><br>
-        <input type='text' id='last' name='last' value="{{last}}" autocomplete="off"><span>Lastname</span><br>
-        <input type='text' id='email' name='email' value="{{email}}"  autocomplete="off"><span>E-Mail</span><br>
-        <input type='text' id='password' name="password" autocomplete="off"><span>Password</span><br>
-        <input type='text' id='age' name='age' value="{{age}}" autocomplete="off"><span>Age</span><br>
-        <input type='text' id='city' name='city' value="{{city}}" autocomplete="off"><span>Office</span><br>
-        <input type='text' id='url' name='url' value="{{url}}"  autocomplete="off"><span>url</span><br>
-        </div>{{/rows}}
+<form id = "edit" method='POST' >
+
+<table>{{#rows}}
+  <tr>
+    <td>Firstname</td>
+    <td><input type='text' id="first" name='first' value="{{first}}" autocomplete="off"></td>
+    <td>Lastname</td>
+    <td><input type='text' id='last' name='last' value="{{last}}" autocomplete="off"></td>
+  </tr>
+  <tr>
+    <td>e-mail</td>
+    <td><input type='text' id='email' name='email' value="{{email}}"  autocomplete="off"></td>
+    <td>Password</td>
+    <td><input type='text' id='password' name="password" autocomplete="off"></td>
+  </tr>
+  <tr>
+    <td>Age</td>
+    <td><input type='text' id='age' name='age' value="{{age}}" autocomplete="off"></td>
+    <td>Office</td>
+    <td><input type='text' id='city' name='city' value="{{city}}" autocomplete="off"></td>
+  </tr>
+ <tr>
+    <td>Url</td>
+    <td><input type='text' id='url' name='url' value="{{url}}"  autocomplete="off"></td>
+  </tr>
+</table>{{/rows}}
+<div>
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
         <button id="submit-button">Update!</submit>
+        </div>
 </form>
 
+
+
+<!--
+
+<form id = "edit" method='POST' >
+        <div>{{#rows}}
+        <div>
+          <div style="width: 40px;">Firstname</div><input type='text' id="first" name='first' value="{{first}}" autocomplete="off">
+        </div>
+        <div>
+        <span style="width: 40px;">Lastname</span><input type='text' id='last' name='last' value="{{last}}" autocomplete="off">
+        </div>
+        <div>
+        <span style="width: 40px;">E-Mail</span><input type='text' id='email' name='email' value="{{email}}"  autocomplete="off">
+        </div>
+        <div>
+        <span>Password</span><input type='text' id='password' name="password" autocomplete="off">
+        </div>
+        <div>
+        <span>Age</span><input type='text' id='age' name='age' value="{{age}}" autocomplete="off">
+        </div>
+        <div>         
+        <span>Office</span><input type='text' id='city' name='city' value="{{city}}" autocomplete="off">
+        </div>
+        <div>
+        <span>url</span><input type='text' id='url' name='url' value="{{url}}"  autocomplete="off">
+        </div>
+        </div>{{/rows}}
+        <div>
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+        <button id="submit-button">Update!</submit>
+        </div>
+
+</form>
+-->
 
