@@ -120,7 +120,6 @@ module.exports.getCities = (city) => {
 };
 
 /////////////////edit/////////////////////////////////////////
-//////////////////edits///////////////////////////////
 
 module.exports.editGet = (id) => {
     return db.query(
@@ -156,7 +155,7 @@ module.exports.editProfiles = (id, age, city, url) => {
     ON CONFLICT (user_id)
     DO UPDATE SET age = $2, city = $3, url = $4
     `,
-        [id, age, city, url]
+        [id, age || null, city || null, url || null]
     );
 };
 
@@ -193,7 +192,7 @@ module.exports.editProfiles = (id, age, city, url) => {
     ON CONFLICT (user_id)
     DO UPDATE SET age = $2, city = $3, url = $4
     `,
-        [id, age, city, url]
+        [id, age || null, city || null, url || null]
     );
 };
 
@@ -216,6 +215,11 @@ module.exports.editProfilesPwChanged = (id, age, city, url) => {
     ON CONFLICT (user_id)
     DO UPDATE SET age = $2, city = $3, url = $4
     `,
-        [id, age, city, url]
+        [id, age || null, city || null, url || null]
     );
+};
+
+//////////////////////numbers of signers////////////////
+module.exports.number = () => {
+    return db.query(`SELECT COUNT(*) FROM signers`);
 };

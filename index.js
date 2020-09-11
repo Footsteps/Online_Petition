@@ -310,10 +310,16 @@ app.get("/signers", (req, res) => {
         if (!req.session.signed) {
             res.redirect("/petition");
         } else {
+            let num;
+            db.number().then(({ rows }) => {
+                //console.log("number signers", rows[0].count);
+                num = rows[0].count;
+            });
             db.getSigners()
                 .then(({ rows }) => {
                     res.render("signers", {
                         rows: rows,
+                        num,
                     });
                     //console.log("get Signers: ", rows);
                     /*
@@ -449,7 +455,7 @@ app.post("/edit", (req, res) => {
     let last = req.body.last;
     //console.log("2", last);
     let email = req.body.email;
-    console.log("email", email);
+    //console.log(email);
     let pw = req.body.password;
     //console.log("pw", pw);
     let age = req.body.age;
@@ -472,7 +478,7 @@ app.post("/edit", (req, res) => {
                 .then(() => {
                     db.editProfiles(user_id, age, city, url)
                         .then((results) => {
-                            //console.log(results);
+                            console.log(results);
                             //console.log("this worked!!!");
                             res.redirect("/signed");
                         })
@@ -493,11 +499,11 @@ app.post("/edit", (req, res) => {
                 db.editUsersWithPw(user_id, first, last, email, salted)
                     .then(() => {
                         //console.log("this worked!!");
-                        db.editProfilesPwChanged(user_id, age, city, url)
+                        db.editProfiles(user_id, age, city, url)
                             .then((results) => {
                                 console.log(results);
                                 console.log("this worked!!!");
-                                //res.redirect("/signed");
+                                res.redirect("/signed");
                             })
                             .catch((err) => {
                                 console.log("err in editProfiles: ", err);
@@ -515,7 +521,7 @@ app.post("/edit", (req, res) => {
                 console.log("rows in getEdit", rows);
                 res.render("edit", {
                     rows: rows,
-                    error: "Uh, something went wrong",
+                    error: "Uh, something went wrong. Please try again",
                 });
             })
             .catch((err) => {
