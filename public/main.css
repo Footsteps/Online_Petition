@@ -24,6 +24,10 @@ p {
     font-size: 22px;
 }
 
+input {
+    color: #fbecec;
+}
+
 .names {
     display: flex;
     width: 500%;
