@@ -23,17 +23,14 @@ h2 {
 p {
     font-size: 22px;
 }
-
-input {
-    color: #fbecec;
-}
-
+/*
 .names {
     display: flex;
     width: 500%;
     margin-left: 50%;
     text-align: center;
 }
+*/
 
 #lastname,
 #firstname {
@@ -41,15 +38,15 @@ input {
     width: 400px;
 }
 
-#canvas {
-    margin-left: 90%;
-}
 input,
 button {
     background-color: #440047;
+    color: #fbecec;
+    /*
     display: block;
     margin-left: 40px;
     margin-right: 40px;
+    */
 }
 
 #canvas {
@@ -58,10 +55,13 @@ button {
     height: 200px;
 }
 
+#petition {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 #submit-button {
-    color: #fbecec;
-    margin-top: 20px;
-    margin-left: 115%;
     width: 200px;
 }
 
@@ -69,9 +69,11 @@ button {
     box-shadow: 0 0 15px blacK;
 }
 
-#sign {
-    transform: translate(80%);
+/* login
+.yellow {
+align-self: flex-end;
 }
+*/
 
 .signature {
     border: 3px solid #440047;
@@ -92,41 +94,29 @@ button {
 
 .signers {
     border: 3px solid #440047;
-    margin-left: 5%;
-    margin-right: 5%;
+    margin-left: 20%;
+    margin-right: 20%;
 }
 
+/*
 .edit {
     padding: 200px;
     margin: 50px;
 }
+*/
 
 #link {
-    margin: 20px;
-    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 1.3em;
 }
 
-#signers {
-    position: absolute;
-    left: 30%;
-    top: 30%;
-}
-
-#edit {
-    position: absolute;
-    top: 75%;
-    left: 30%;
-}
 #delete-button {
     background-color: #fbecec;
-    position: absolute;
-    left: 18.5%;
-    top: 120%;
-    width: 150px;
     color: #440047;
     text-decoration: underline;
-    width: 400px;
-    font-size: 16px;
+    font-size: 1em;
     border: none;
 }
 
@@ -134,4 +124,12 @@ button {
     /* Chrome, Firefox, Opera, Safari 10.1+ */
     color: #fbecec;
     opacity: 1; /* Firefox */
+}
+
+#back {
+    font-size: 22px;
+}
+
+table {
+    margin: 0 auto;
 }
