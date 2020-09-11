@@ -510,9 +510,17 @@ app.post("/edit", (req, res) => {
         }
     } else {
         let user_id = req.session.userId;
-        res.redirect("/edit", {
-            error: "Ooops, something went wrong! Please try again.",
-        });
+        db.editGet(user_id)
+            .then(({ rows }) => {
+                console.log("rows in getEdit", rows);
+                res.render("edit", {
+                    rows: rows,
+                    error: "Uh, something went wrong",
+                });
+            })
+            .catch((err) => {
+                console.log("err in editGet: ", err);
+            }); //closes error; //closes editGet
     }
 });
 
