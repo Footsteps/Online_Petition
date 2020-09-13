@@ -44,35 +44,6 @@ app.use(function (req, res, next) {
 
 ////////////////////////////////ROOT ROUTE //////////////////////////////////////
 app.get("/", (req, res) => {
-    /*
-    db.getTableUsers()
-        .then(({ rows }) => {
-            for (let i = 0; i < rows.length; i++) {
-                console.log("users table: ", rows);
-            }
-        })
-        .catch((err) => {
-            console.log("err in getSigners: ", err);
-        });
-    db.getTableSigners()
-        .then(({ rows }) => {
-            for (let i = 0; i < rows.length; i++) {
-                console.log("signers table: ", rows);
-            }
-        })
-        .catch((err) => {
-            console.log("err in getSigners: ", err);
-        });
-    db.getTableProfiles()
-        .then(({ rows }) => {
-            for (let i = 0; i < rows.length; i++) {
-                console.log("profiles table: ", rows);
-            }
-        })
-        .catch((err) => {
-            console.log("err in get profiles: ", err);
-        });
-   */
     db.getEmAll()
         .then(({ rows }) => {
             console.log("all tables: ", rows);
@@ -102,7 +73,7 @@ app.get("/register", (req, res) => {
 app.post("/register", (req, res) => {
     console.log("post request to registration route happend!!!");
     //console.log("req.body: ", req.body);
-    let first = req.body.name;
+    let first = req.body.first;
     //console.log(firstname);
     let last = req.body.last;
     //console.log(lastname);
@@ -112,7 +83,16 @@ app.post("/register", (req, res) => {
     //console.log(password);
     let userID;
 
-    if (first === "" || last === "" || email === "" || password === "") {
+    if (
+        first === "" ||
+        last === "" ||
+        email === "" ||
+        password === "" ||
+        first.startsWith("<") ||
+        last.startsWith("<") ||
+        email.startsWith("<") ||
+        password.startsWith("<")
+    ) {
         res.render("register", {
             error: "Oh, something went wrong! Please try again :) ",
         });
@@ -176,6 +156,22 @@ app.post("/profile", (req, res) => {
         url = "https://" + url;
         console.log(url);
     }
+
+    if (url.startsWith("<") || age.startsWith("<") || city.startsWith("<")) {
+        res.render("profile", {
+            error: "Ooops, something went wrong! Please try again.",
+        });
+    } else {
+        db.profiling(age, city, url, user_id)
+            .then(() => {
+                res.redirect("/petition");
+            })
+            .catch((err) => {
+                console.log("err in profiling: ", err);
+            });
+    }
+
+    /*
     if (url.startsWith("http") || !req.body.url) {
         console.log("url starts with http or is void");
         db.profiling(age, city, url, user_id)
@@ -190,6 +186,7 @@ app.post("/profile", (req, res) => {
             error: "Ooops, something went wrong! Please try again.",
         });
     }
+*/
 
     //console.log("req.session after adding something: ", req.session);
 });
@@ -471,50 +468,16 @@ app.post("/edit", (req, res) => {
         url = "https://" + url;
         console.log(url);
     }
-    if (url.startsWith("http") || !req.body.url) {
-        if (pw == "") {
-            console.log("password did not get changed");
-            db.editUsers(user_id, first, last, email)
-                .then(() => {
-                    db.editProfiles(user_id, age, city, url)
-                        .then((results) => {
-                            console.log(results);
-                            //console.log("this worked!!!");
-                            res.redirect("/signed");
-                        })
-                        .catch((err) => {
-                            console.log("err in editProfiles: ", err);
-                        }); //closes error; //closes editGet
-                })
-                .catch((err) => {
-                    console.log("err in editUsers: ", err);
-                }); //closes error; //closes editGet
-        } else {
-            console.log("password did change!");
-            console.log(pw);
-            hast = pw;
-            bc.hash(req.body.password).then((salted) => {
-                console.log("salted pw: ", salted);
 
-                db.editUsersWithPw(user_id, first, last, email, salted)
-                    .then(() => {
-                        //console.log("this worked!!");
-                        db.editProfiles(user_id, age, city, url)
-                            .then((results) => {
-                                console.log(results);
-                                console.log("this worked!!!");
-                                res.redirect("/signed");
-                            })
-                            .catch((err) => {
-                                console.log("err in editProfiles: ", err);
-                            }); //closes error; //closes editGet
-                    })
-                    .catch((err) => {
-                        console.log("err in edit users with password: ", err);
-                    });
-            });
-        }
-    } else {
+    if (
+        first.startsWith("<") ||
+        last.startsWith("<") ||
+        email.startsWith("<") ||
+        pw.startsWith("<") ||
+        age.startsWith("<") ||
+        city.startsWith("<") ||
+        url.startsWith("<")
+    ) {
         let user_id = req.session.userId;
         db.editGet(user_id)
             .then(({ rows }) => {
@@ -527,6 +490,67 @@ app.post("/edit", (req, res) => {
             .catch((err) => {
                 console.log("err in editGet: ", err);
             }); //closes error; //closes editGet
+    } else {
+        if (url.startsWith("http") || !req.body.url) {
+            if (pw == "") {
+                console.log("password did not get changed");
+                db.editUsers(user_id, first, last, email)
+                    .then(() => {
+                        db.editProfiles(user_id, age, city, url)
+                            .then((results) => {
+                                console.log(results);
+                                //console.log("this worked!!!");
+                                res.redirect("/signed");
+                            })
+                            .catch((err) => {
+                                console.log("err in editProfiles: ", err);
+                            }); //closes error; //closes editGet
+                    })
+                    .catch((err) => {
+                        console.log("err in editUsers: ", err);
+                    }); //closes error; //closes editGet
+            } else {
+                console.log("password did change!");
+                console.log(pw);
+                hast = pw;
+                bc.hash(req.body.password).then((salted) => {
+                    console.log("salted pw: ", salted);
+
+                    db.editUsersWithPw(user_id, first, last, email, salted)
+                        .then(() => {
+                            //console.log("this worked!!");
+                            db.editProfiles(user_id, age, city, url)
+                                .then((results) => {
+                                    console.log(results);
+                                    console.log("this worked!!!");
+                                    res.redirect("/signed");
+                                })
+                                .catch((err) => {
+                                    console.log("err in editProfiles: ", err);
+                                }); //closes error; //closes editGet
+                        })
+                        .catch((err) => {
+                            console.log(
+                                "err in edit users with password: ",
+                                err
+                            );
+                        });
+                });
+            }
+        } else {
+            let user_id = req.session.userId;
+            db.editGet(user_id)
+                .then(({ rows }) => {
+                    console.log("rows in getEdit", rows);
+                    res.render("edit", {
+                        rows: rows,
+                        error: "Uh, something went wrong. Please try again",
+                    });
+                })
+                .catch((err) => {
+                    console.log("err in editGet: ", err);
+                }); //closes error; //closes editGet
+        }
     }
 });
 
