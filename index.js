@@ -55,12 +55,7 @@ app.get("/", (req, res) => {
     //console.log("req.session: ", req.session);
 
     //console.log("get request to root route happend!!!");
-    if (
-        (!req.session.userId &&
-            req.url != "/login" &&
-            req.url != "/register") ||
-        !req.session.logged
-    ) {
+    if (!req.session.userId && req.url != "/login" && req.url != "/register") {
         res.redirect("/register");
     } else {
         res.redirect("/signed");
@@ -103,7 +98,6 @@ app.post("/register", (req, res) => {
                     userId = id.rows[0].id;
                     //set id as cookie
                     req.session.userId = userId;
-                    req.session.logged = true;
                     console.log("req.session: ", req.session);
                     res.redirect("profile");
                 })
@@ -125,12 +119,7 @@ app.post("/register", (req, res) => {
 app.get("/profile", (req, res) => {
     console.log("get request to profile route happend!!!");
 
-    if (
-        (!req.session.userId &&
-            req.url != "/login" &&
-            req.url != "/register") ||
-        !req.session.logged
-    ) {
+    if (!req.session.userId && req.url != "/login" && req.url != "/register") {
         res.redirect("/register");
     } else {
         res.render("profile", {
@@ -144,8 +133,7 @@ app.post("/profile", (req, res) => {
         (!req.session.userId &&
             req.url != "/login" &&
             req.url != "/register") ||
-        !req.session.csrfSecret ||
-        !req.session.logged
+        !req.session.csrfSecret
     ) {
         res.redirect("/register");
     } else {
@@ -193,12 +181,7 @@ app.post("/profile", (req, res) => {
 ////////////////////////////////PETITION ROUTE //////////////////////////////////////
 app.get("/petition", (req, res) => {
     //console.log("get request to petition route happend!!!");
-    if (
-        (!req.session.userId &&
-            req.url != "/login" &&
-            req.url != "/register") ||
-        !req.session.logged
-    ) {
+    if (!req.session.userId && req.url != "/login" && req.url != "/register") {
         res.redirect("/register");
     } else {
         if (!req.session.signed) {
@@ -216,8 +199,7 @@ app.post("/petition", (req, res) => {
         (!req.session.userId &&
             req.url != "/login" &&
             req.url != "/register") ||
-        !req.session.csrfSecret ||
-        !req.session.logged
+        !req.session.csrfSecret
     ) {
         res.redirect("/register");
     } else {
@@ -239,7 +221,7 @@ app.post("/petition", (req, res) => {
                 //console.log(thisSign);
                 //console.log("req.session: ", req.session);
                 //set signature as cookie
-                req.session.id = signerId;
+                req.session.sig = signerId;
                 //console.log("req.session: ", req.session);
                 //set cookie for signing
                 req.session.signed = "signed!";
@@ -265,24 +247,24 @@ app.post("/petition", (req, res) => {
 app.get("/signed", (req, res) => {
     //console.log("get request to signed route happend!!!");
     console.log("req.session.userId", req.session.userId);
+
     if (
         (!req.session.userId &&
             req.url != "/login" &&
             req.url != "/register") ||
-        !req.session.csrfSecret ||
-        !req.session.logged
+        !req.session.csrfSecret
     ) {
         res.redirect("/register");
     } else {
         //res.render("signed", {});
-        if (!req.session.signed) {
+        if (!req.session.sig) {
             res.redirect("/petition");
         } else {
-            db.getSignature(req.session.id)
+            db.getSignature(req.session.sig)
                 .then(({ rows }) => {
-                    //console.log(rows);
+                    //console.log(rows[0].sign);
                     let sign = rows[0].sign;
-                    //console.log(sign);
+                    //console.log("sign", sign);
                     //console.log(typeof rows);
                     //console.log(typeof sign);
 
@@ -300,7 +282,7 @@ app.get("/signed", (req, res) => {
 app.post("/delete/signature", (req, res) => {
     console.log("post request to delete/signed route happend!!!");
     console.log("req.session.userId", req.session.userId);
-    console.log("req.session.id", req.session.id);
+    console.log("req.session.sig", req.session.sig);
     console.log("req.session.signed", req.session.signed);
 
     db.deleteSignature(req.session.userId)
@@ -319,10 +301,7 @@ app.post("/delete/signature", (req, res) => {
 
 app.post("/logout", (req, res) => {
     console.log("post request to logout route happend!!!");
-    console.log("req.session.logged", req.session.logged);
-
-    req.session.logged = null;
-    console.log(req.session.logged);
+    req.session = null;
     res.redirect("/");
 });
 
@@ -435,13 +414,35 @@ app.post("/login", (req, res) => {
                     if (result == true) {
                         console.log("password works!!!!");
                         req.session.userId = rows[0].id;
-                        req.session.logged = true;
-                        console.log("req.session: ", req.session);
-                        if (!req.session.signed) {
+                        console.log("req.session.userId: ", req.session.userId);
+                        console.log("req.session in dbemail: ", req.session);
+                        console.log(
+                            "req.session.sig in dbemail: ",
+                            req.session.sig
+                        );
+
+                        db.checkSign(req.session.userId)
+                            .then(({ rows }) => {
+                                //console.log("rows in checkSign ", rows[0]);
+                                if (rows[0] == undefined) {
+                                    res.redirect("/petition");
+                                } else {
+                                    console.log("rows[0] in else: ", rows[0]);
+                                    req.session.sig = rows[0].id;
+                                    console.log(req.session.sig);
+                                    res.redirect("/signed");
+                                }
+                            })
+                            .catch((err) => {
+                                console.log("err in checkSign: ", err);
+                            });
+                        /*
+                        if (!req.session.sig == undefined) {
                             res.redirect("/petition");
                         } else {
                             res.redirect("/signed");
                         } //closes if-else-cookie
+                        */
                     } else {
                         res.render("login", {
                             error:
@@ -468,8 +469,7 @@ app.get("/edit", (req, res) => {
         (!req.session.userId &&
             req.url != "/login" &&
             req.url != "/register") ||
-        !req.session.csrfSecret ||
-        !req.session.logged
+        !req.session.csrfSecret
     ) {
         res.redirect("/register");
     } else {
@@ -496,8 +496,7 @@ app.post("/edit", (req, res) => {
         (!req.session.userId &&
             req.url != "/login" &&
             req.url != "/register") ||
-        !req.session.csrfSecret ||
-        !req.session.logged
+        !req.session.csrfSecret
     ) {
         res.redirect("/register");
     } else {

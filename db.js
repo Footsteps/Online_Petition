@@ -10,7 +10,7 @@ const db = spicedPg(
 
 //////////////my cookies - just to remember///////////////////////
 //cookie userId: req.session.userId; set with register
-//cookie with signature: req.session.id; set with addSignature
+//cookie with signature: req.session.sig; set with addSignature
 //cookie that somebody has signed: req.session.signed; set with addSignature
 //remove cookie: req.session.userId= null
 
@@ -90,6 +90,14 @@ module.exports.email = (email) => {
     return db.query(`SELECT * FROM users WHERE email = ($1)`, [email]);
 };
 
+module.exports.checkSign = (id) => {
+    return db.query(
+        `SELECT * FROM signers
+        WHERE user_id = $1
+        `,
+        [id]
+    );
+};
 ///////////////////profile/////////////////////////////////////
 module.exports.profiling = (age, city, url, user_id) => {
     return db.query(
