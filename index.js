@@ -55,7 +55,12 @@ app.get("/", (req, res) => {
     //console.log("req.session: ", req.session);
 
     //console.log("get request to root route happend!!!");
-    if (!req.session.userId && req.url != "/login" && req.url != "/register") {
+    if (
+        (!req.session.userId &&
+            req.url != "/login" &&
+            req.url != "/register") ||
+        !req.session.logged
+    ) {
         res.redirect("/register");
     } else {
         res.redirect("/signed");
@@ -98,7 +103,8 @@ app.post("/register", (req, res) => {
                     userId = id.rows[0].id;
                     //set id as cookie
                     req.session.userId = userId;
-                    //console.log("req.session: ", req.session);
+                    req.session.logged = true;
+                    console.log("req.session: ", req.session);
                     res.redirect("profile");
                 })
                 .catch((err) => {
@@ -119,7 +125,12 @@ app.post("/register", (req, res) => {
 app.get("/profile", (req, res) => {
     console.log("get request to profile route happend!!!");
 
-    if (!req.session.userId && req.url != "/login" && req.url != "/register") {
+    if (
+        (!req.session.userId &&
+            req.url != "/login" &&
+            req.url != "/register") ||
+        !req.session.logged
+    ) {
         res.redirect("/register");
     } else {
         res.render("profile", {
@@ -133,7 +144,8 @@ app.post("/profile", (req, res) => {
         (!req.session.userId &&
             req.url != "/login" &&
             req.url != "/register") ||
-        !req.session.csrfSecret
+        !req.session.csrfSecret ||
+        !req.session.logged
     ) {
         res.redirect("/register");
     } else {
@@ -181,7 +193,12 @@ app.post("/profile", (req, res) => {
 ////////////////////////////////PETITION ROUTE //////////////////////////////////////
 app.get("/petition", (req, res) => {
     //console.log("get request to petition route happend!!!");
-    if (!req.session.userId && req.url != "/login" && req.url != "/register") {
+    if (
+        (!req.session.userId &&
+            req.url != "/login" &&
+            req.url != "/register") ||
+        !req.session.logged
+    ) {
         res.redirect("/register");
     } else {
         if (!req.session.signed) {
@@ -199,7 +216,8 @@ app.post("/petition", (req, res) => {
         (!req.session.userId &&
             req.url != "/login" &&
             req.url != "/register") ||
-        !req.session.csrfSecret
+        !req.session.csrfSecret ||
+        !req.session.logged
     ) {
         res.redirect("/register");
     } else {
@@ -251,7 +269,8 @@ app.get("/signed", (req, res) => {
         (!req.session.userId &&
             req.url != "/login" &&
             req.url != "/register") ||
-        !req.session.csrfSecret
+        !req.session.csrfSecret ||
+        !req.session.logged
     ) {
         res.redirect("/register");
     } else {
@@ -298,6 +317,15 @@ app.post("/delete/signature", (req, res) => {
         });
 });
 
+app.post("/logout", (req, res) => {
+    console.log("post request to logout route happend!!!");
+    console.log("req.session.logged", req.session.logged);
+
+    req.session.logged = null;
+    console.log(req.session.logged);
+    res.redirect("/");
+});
+
 ////////////////////////////////SIGNERS ROUTE //////////////////////////////////////
 
 app.get("/signers", (req, res) => {
@@ -305,7 +333,8 @@ app.get("/signers", (req, res) => {
         (!req.session.userId &&
             req.url != "/login" &&
             req.url != "/register") ||
-        !req.session.csrfSecret
+        !req.session.csrfSecret ||
+        !req.session.logged
     ) {
         res.redirect("/register");
     } else {
@@ -348,7 +377,8 @@ app.get("/signers/:city", (req, res) => {
         (!req.session.userId &&
             req.url != "/login" &&
             req.url != "/register") ||
-        !req.session.csrfSecret
+        !req.session.csrfSecret ||
+        !req.session.logged
     ) {
         res.redirect("/register");
     } else {
@@ -405,6 +435,7 @@ app.post("/login", (req, res) => {
                     if (result == true) {
                         console.log("password works!!!!");
                         req.session.userId = rows[0].id;
+                        req.session.logged = true;
                         console.log("req.session: ", req.session);
                         if (!req.session.signed) {
                             res.redirect("/petition");
@@ -437,7 +468,8 @@ app.get("/edit", (req, res) => {
         (!req.session.userId &&
             req.url != "/login" &&
             req.url != "/register") ||
-        !req.session.csrfSecret
+        !req.session.csrfSecret ||
+        !req.session.logged
     ) {
         res.redirect("/register");
     } else {
@@ -464,7 +496,8 @@ app.post("/edit", (req, res) => {
         (!req.session.userId &&
             req.url != "/login" &&
             req.url != "/register") ||
-        !req.session.csrfSecret
+        !req.session.csrfSecret ||
+        !req.session.logged
     ) {
         res.redirect("/register");
     } else {
