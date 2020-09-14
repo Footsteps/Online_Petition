@@ -83,16 +83,7 @@ app.post("/register", (req, res) => {
     //console.log(password);
     let userID;
 
-    if (
-        first === "" ||
-        last === "" ||
-        email === "" ||
-        password === "" ||
-        first.startsWith("<") ||
-        last.startsWith("<") ||
-        email.startsWith("<") ||
-        password.startsWith("<")
-    ) {
+    if (first === "" || last === "" || email === "" || password === "") {
         res.render("register", {
             error: "Oh, something went wrong! Please try again :) ",
         });
@@ -112,6 +103,9 @@ app.post("/register", (req, res) => {
                 })
                 .catch((err) => {
                     console.log("err in register: ", err);
+                    res.render("register", {
+                        error: "Oh, something went wrong! Please try again :) ",
+                    });
                 });
         });
     }

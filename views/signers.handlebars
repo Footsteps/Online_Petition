@@ -10,7 +10,12 @@ So far, already {{num}} people have signed!
 <img src="/hero.jpg">
 
 <p>Yours sincerely...</p>
+
+
+
+
 <div class="signers">{{#rows}}
+
 {{#if url}}
 <p>
  <a href = {{url}} target="_blank"> {{first}} {{last}}</a>   {{age}}
@@ -23,6 +28,7 @@ So far, already {{num}} people have signed!
  {{/if}}
 {{/rows}}
 </div>
+
 <p>Click on the name to jump to the signer's given webpage.</p>
 <p>Click on the office to see who else from your office signed up!</p>
 <p><a id="back" href="/signed/">Or click here to go back!</a></p>
