@@ -46,7 +46,7 @@ app.use(function (req, res, next) {
 app.get("/", (req, res) => {
     db.getEmAll()
         .then(({ rows }) => {
-            console.log("all tables: ", rows);
+            //console.log("all tables: ", rows);
         })
         .catch((err) => {
             console.log("err in get profiles: ", err);
@@ -64,14 +64,14 @@ app.get("/", (req, res) => {
 
 //////////////////registration//////////////////////////////////////
 app.get("/register", (req, res) => {
-    console.log("get request to registration route happend!!!");
+    //console.log("get request to registration route happend!!!");
     res.render("register", {
         layout: "main",
     });
 });
 
 app.post("/register", (req, res) => {
-    console.log("post request to registration route happend!!!");
+    //console.log("post request to registration route happend!!!");
     //console.log("req.body: ", req.body);
     let first = req.body.first;
     //console.log(firstname);
@@ -98,11 +98,11 @@ app.post("/register", (req, res) => {
                     userId = id.rows[0].id;
                     //set id as cookie
                     req.session.userId = userId;
-                    console.log("req.session: ", req.session);
+                    //console.log("req.session: ", req.session);
                     res.redirect("profile");
                 })
                 .catch((err) => {
-                    console.log("err in register: ", err);
+                    //console.log("err in register: ", err);
                     res.render("register", {
                         error: "Oh, something went wrong! Please try again :) ",
                     });
@@ -117,7 +117,7 @@ app.post("/register", (req, res) => {
 
 //////////////////////////PROFILE ROUTE//////////////////////////
 app.get("/profile", (req, res) => {
-    console.log("get request to profile route happend!!!");
+    //console.log("get request to profile route happend!!!");
 
     if (!req.session.userId && req.url != "/login" && req.url != "/register") {
         res.redirect("/register");
@@ -137,7 +137,7 @@ app.post("/profile", (req, res) => {
     ) {
         res.redirect("/register");
     } else {
-        console.log("post request to profile route happend!!!");
+        //console.log("post request to profile route happend!!!");
         //console.log("req.body: ", req.body);
         let age = req.body.age;
         //console.log(age);
@@ -146,17 +146,17 @@ app.post("/profile", (req, res) => {
         let url = req.body.url;
         //console.log(rul);
         let user_id = req.session.userId;
-        console.log(user_id);
-        console.log("req.body: ", req.body);
+        //console.log(user_id);
+        //console.log("req.body: ", req.body);
         //console.log("req.session: ", req.session);
 
         city = city.split(" ").join("_");
-        console.log("city after split: ", city);
+        //console.log("city after split: ", city);
 
         if (url.startsWith("www")) {
-            console.log("url starts with www");
+            //console.log("url starts with www");
             url = "https://" + url;
-            console.log(url);
+            //console.log(url);
         }
 
         if (url.startsWith("http") || !req.body.url) {
@@ -166,7 +166,7 @@ app.post("/profile", (req, res) => {
                     res.redirect("/petition");
                 })
                 .catch((err) => {
-                    console.log("err in profiling: ", err);
+                    //console.log("err in profiling: ", err);
                 });
         } else {
             res.render("profile", {
@@ -203,11 +203,11 @@ app.post("/petition", (req, res) => {
     ) {
         res.redirect("/register");
     } else {
-        console.log("post request to petition rout happend!!!");
-        console.log("req.body: ", req.body);
+        //console.log("post request to petition rout happend!!!");
+        //console.log("req.body: ", req.body);
         //console.log("req.body: ", req.body);
         let sign = req.body.signature;
-        console.log(sign);
+        //console.log(sign);
         let user_id = req.session.userId;
         let signerId;
 
@@ -225,7 +225,7 @@ app.post("/petition", (req, res) => {
                 //console.log("req.session: ", req.session);
                 //set cookie for signing
                 req.session.signed = "signed!";
-                console.log("req.session: ", req.session);
+                //console.log("req.session: ", req.session);
 
                 res.redirect("/signed");
             })
@@ -233,7 +233,7 @@ app.post("/petition", (req, res) => {
                 res.render("petition", {
                     error: "Ooops, something went wrong! Please sign again.",
                 });
-                console.log("err in addSigner: ", err);
+                //console.log("err in addSigner: ", err);
             });
     }
 
@@ -246,7 +246,7 @@ app.post("/petition", (req, res) => {
 
 app.get("/signed", (req, res) => {
     //console.log("get request to signed route happend!!!");
-    console.log("req.session.userId", req.session.userId);
+    //console.log("req.session.userId", req.session.userId);
 
     if (
         (!req.session.userId &&
@@ -280,27 +280,27 @@ app.get("/signed", (req, res) => {
 });
 
 app.post("/delete/signature", (req, res) => {
-    console.log("post request to delete/signed route happend!!!");
-    console.log("req.session.userId", req.session.userId);
-    console.log("req.session.sig", req.session.sig);
-    console.log("req.session.signed", req.session.signed);
+    //console.log("post request to delete/signed route happend!!!");
+    //console.log("req.session.userId", req.session.userId);
+    //console.log("req.session.sig", req.session.sig);
+    //console.log("req.session.signed", req.session.signed);
 
     db.deleteSignature(req.session.userId)
         .then(({ rows }) => {
-            console.log("signature deleted!");
+            //console.log("signature deleted!");
 
             req.session.signed = null;
 
-            console.log(req.session.signed);
+            //console.log(req.session.signed);
             res.redirect("/petition");
         })
         .catch((err) => {
-            console.log("err in delete Signature: ", err);
+            //console.log("err in delete Signature: ", err);
         });
 });
 
 app.post("/logout", (req, res) => {
-    console.log("post request to logout route happend!!!");
+    //console.log("post request to logout route happend!!!");
     req.session = null;
     res.redirect("/");
 });
@@ -308,6 +308,9 @@ app.post("/logout", (req, res) => {
 ////////////////////////////////SIGNERS ROUTE //////////////////////////////////////
 
 app.get("/signers", (req, res) => {
+    console.log("req.session", req.session);
+    console.log("req.", req.session);
+    //console.log("res", res);
     if (
         (!req.session.userId &&
             req.url != "/login" &&
@@ -364,7 +367,7 @@ app.get("/signers/:city", (req, res) => {
         //console.log("get request to signers route happend!!!");
         const city = req.params.city;
         //console.log(req.params);
-        console.log(city);
+        //console.log(city);
         db.getCities(req.params.city)
             .then(({ rows }) => {
                 //console.log("rows: ", rows);
@@ -381,14 +384,14 @@ app.get("/signers/:city", (req, res) => {
 
 //////////////////////////////login////////////////////////////////////////
 app.get("/login", (req, res) => {
-    console.log("get request to login route happend!!!");
+    //console.log("get request to login route happend!!!");
     res.render("login", {
         layout: "main",
     });
 });
 
 app.post("/login", (req, res) => {
-    console.log("post request to login route happend!!!");
+    //console.log("post request to login route happend!!!");
     //console.log("req.body: ", req.body);
     let emailLogin = req.body.email;
     //console.log(sign);
@@ -412,14 +415,15 @@ app.post("/login", (req, res) => {
 
                 bc.compare(passwordLogin, rows[0].password).then((result) => {
                     if (result == true) {
-                        console.log("password works!!!!");
+                        //console.log("password works!!!!");
                         req.session.userId = rows[0].id;
-                        console.log("req.session.userId: ", req.session.userId);
-                        console.log("req.session in dbemail: ", req.session);
-                        console.log(
+                        //console.log("req.session.userId: ", req.session.userId);
+                        //console.log("req.session in dbemail: ", req.session);
+                        /*console.log(
                             "req.session.sig in dbemail: ",
                             req.session.sig
                         );
+                        */
 
                         db.checkSign(req.session.userId)
                             .then(({ rows }) => {
@@ -427,9 +431,11 @@ app.post("/login", (req, res) => {
                                 if (rows[0] == undefined) {
                                     res.redirect("/petition");
                                 } else {
-                                    console.log("rows[0] in else: ", rows[0]);
+                                    //console.log("rows[0] in else: ", rows[0]);
                                     req.session.sig = rows[0].id;
-                                    console.log(req.session.sig);
+                                    req.session.logged = true;
+
+                                    //console.log(req.session.sig);
                                     res.redirect("/signed");
                                 }
                             })
@@ -445,8 +451,7 @@ app.post("/login", (req, res) => {
                         */
                     } else {
                         res.render("login", {
-                            error:
-                                "Oh, something went wrong! Please try again :) ",
+                            error: "Oh, something went wrong! Please try again :) ",
                         });
                     }
                 });
@@ -464,7 +469,7 @@ app.post("/login", (req, res) => {
 //////////////////////////////edit////////////////////////////////////////
 
 app.get("/edit", (req, res) => {
-    console.log("get request to edit route happend!!!");
+    //console.log("get request to edit route happend!!!");
     if (
         (!req.session.userId &&
             req.url != "/login" &&
@@ -479,7 +484,7 @@ app.get("/edit", (req, res) => {
             let user_id = req.session.userId;
             db.editGet(user_id)
                 .then(({ rows }) => {
-                    console.log("rows in getEdit", rows);
+                    //console.log("rows in getEdit", rows);
                     res.render("edit", {
                         rows: rows,
                     });
@@ -575,7 +580,7 @@ app.post("/edit", (req, res) => {
             let user_id = req.session.userId;
             db.editGet(user_id)
                 .then(({ rows }) => {
-                    console.log("rows in getEdit", rows);
+                    //console.log("rows in getEdit", rows);
                     res.render("edit", {
                         rows: rows,
                         error: "Uh, something went wrong. Please try again",
