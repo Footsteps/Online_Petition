@@ -52,9 +52,6 @@ app.get("/", (req, res) => {
             console.log("err in get profiles: ", err);
         });
 
-    //console.log("req.session: ", req.session);
-
-    //console.log("get request to root route happend!!!");
     if (!req.session.userId && req.url != "/login" && req.url != "/register") {
         res.redirect("/register");
     } else {
@@ -64,23 +61,20 @@ app.get("/", (req, res) => {
 
 //////////////////registration//////////////////////////////////////
 app.get("/register", (req, res) => {
-    //console.log("get request to registration route happend!!!");
     res.render("register", {
         layout: "main",
     });
 });
 
 app.post("/register", (req, res) => {
-    //console.log("post request to registration route happend!!!");
-    //console.log("req.body: ", req.body);
     let first = req.body.first;
-    //console.log(firstname);
+
     let last = req.body.last;
-    //console.log(lastname);
+
     let email = req.body.email;
-    //console.log(sign);
+
     let password = req.body.password;
-    //console.log(password);
+
     let userID;
 
     if (first === "" || last === "" || email === "" || password === "") {
@@ -88,44 +82,34 @@ app.post("/register", (req, res) => {
             error: "Oh, something went wrong! Please try again :) ",
         });
     } else {
-        //console.log("req.body: ", req.body);
-        //console.log(req.body.password);
-
         bc.hash(req.body.password).then((salted) => {
-            //console.log("salted: ", salted);
             db.register(req.body.first, req.body.last, req.body.email, salted)
                 .then((id) => {
                     userId = id.rows[0].id;
                     //set id as cookie
                     req.session.userId = userId;
-                    //console.log("req.session: ", req.session);
+
                     res.redirect("profile");
                 })
                 .catch((err) => {
-                    //console.log("err in register: ", err);
+                    console.log("err in register: ", err);
                     res.render("register", {
                         error: "Oh, something went wrong! Please try again :) ",
                     });
                 });
         });
     }
-
-    //console.log("req.session: ", req.session);
-
-    //console.log("req.session after adding something: ", req.session);
 });
 
 //////////////////////////PROFILE ROUTE//////////////////////////
 app.get("/profile", (req, res) => {
-    //console.log("get request to profile route happend!!!");
-
     if (!req.session.userId && req.url != "/login" && req.url != "/register") {
         res.redirect("/register");
     } else {
         res.render("profile", {
             layout: "main",
         });
-    } //closes else userId
+    }
 });
 
 app.post("/profile", (req, res) => {
@@ -137,36 +121,27 @@ app.post("/profile", (req, res) => {
     ) {
         res.redirect("/register");
     } else {
-        //console.log("post request to profile route happend!!!");
-        //console.log("req.body: ", req.body);
         let age = req.body.age;
-        //console.log(age);
+
         let city = req.body.city;
-        //console.log(city);
+
         let url = req.body.url;
-        //console.log(rul);
+
         let user_id = req.session.userId;
-        //console.log(user_id);
-        //console.log("req.body: ", req.body);
-        //console.log("req.session: ", req.session);
 
         city = city.split(" ").join("_");
-        //console.log("city after split: ", city);
 
         if (url.startsWith("www")) {
-            //console.log("url starts with www");
             url = "https://" + url;
-            //console.log(url);
         }
 
         if (url.startsWith("http") || !req.body.url) {
-            console.log("url starts with http or is void");
             db.profiling(age, city, url, user_id)
                 .then(() => {
                     res.redirect("/petition");
                 })
                 .catch((err) => {
-                    //console.log("err in profiling: ", err);
+                    console.log("err in profiling: ", err);
                 });
         } else {
             res.render("profile", {
@@ -174,13 +149,10 @@ app.post("/profile", (req, res) => {
             });
         }
     }
-
-    //console.log("req.session after adding something: ", req.session);
 });
 
 ////////////////////////////////PETITION ROUTE //////////////////////////////////////
 app.get("/petition", (req, res) => {
-    //console.log("get request to petition route happend!!!");
     if (!req.session.userId && req.url != "/login" && req.url != "/register") {
         res.redirect("/register");
     } else {
@@ -190,8 +162,8 @@ app.get("/petition", (req, res) => {
             });
         } else {
             res.redirect("/signed");
-        } //closes if-else-cookie
-    } //closes else userId
+        }
+    }
 });
 
 app.post("/petition", (req, res) => {
@@ -203,26 +175,18 @@ app.post("/petition", (req, res) => {
     ) {
         res.redirect("/register");
     } else {
-        //console.log("post request to petition rout happend!!!");
-        //console.log("req.body: ", req.body);
-        //console.log("req.body: ", req.body);
         let sign = req.body.signature;
-        //console.log(sign);
+
         let user_id = req.session.userId;
         let signerId;
 
         db.addSignature(sign, user_id)
             .then((id) => {
-                //console.log(id);
-                //console.log(id.rows[0]);#
-                //console.log(id.rows[0].id);
-                //store id in variable
                 signerId = id.rows[0].id;
-                //console.log(thisSign);
-                //console.log("req.session: ", req.session);
+
                 //set signature as cookie
                 req.session.sig = signerId;
-                //console.log("req.session: ", req.session);
+
                 //set cookie for signing
                 req.session.signed = "signed!";
                 //console.log("req.session: ", req.session);
@@ -233,21 +197,14 @@ app.post("/petition", (req, res) => {
                 res.render("petition", {
                     error: "Ooops, something went wrong! Please sign again.",
                 });
-                //console.log("err in addSigner: ", err);
+                console.log("err in addSigner: ", err);
             });
     }
-
-    //console.log("req.session: ", req.session);
-
-    //console.log("req.session after adding something: ", req.session);
 });
 
 ////////////////////////////////SIGNED ROUTE //////////////////////////////////////
 
 app.get("/signed", (req, res) => {
-    //console.log("get request to signed route happend!!!");
-    //console.log("req.session.userId", req.session.userId);
-
     if (
         (!req.session.userId &&
             req.url != "/login" &&
@@ -262,11 +219,7 @@ app.get("/signed", (req, res) => {
         } else {
             db.getSignature(req.session.sig)
                 .then(({ rows }) => {
-                    //console.log(rows[0].sign);
                     let sign = rows[0].sign;
-                    //console.log("sign", sign);
-                    //console.log(typeof rows);
-                    //console.log(typeof sign);
 
                     res.render("signed", {
                         sign,
@@ -280,53 +233,40 @@ app.get("/signed", (req, res) => {
 });
 
 app.post("/delete/signature", (req, res) => {
-    //console.log("post request to delete/signed route happend!!!");
-    //console.log("req.session.userId", req.session.userId);
-    //console.log("req.session.sig", req.session.sig);
-    //console.log("req.session.signed", req.session.signed);
-
     db.deleteSignature(req.session.userId)
         .then(({ rows }) => {
-            //console.log("signature deleted!");
-
             req.session.signed = null;
 
-            //console.log(req.session.signed);
             res.redirect("/petition");
         })
         .catch((err) => {
-            //console.log("err in delete Signature: ", err);
+            console.log("err in delete Signature: ", err);
         });
 });
 
 app.post("/logout", (req, res) => {
-    //console.log("post request to logout route happend!!!");
     req.session = null;
+
     res.redirect("/");
 });
 
 ////////////////////////////////SIGNERS ROUTE //////////////////////////////////////
 
 app.get("/signers", (req, res) => {
-    console.log("req.session", req.session);
-    console.log("req.", req.session);
-    //console.log("res", res);
+    console.log("req.session", req.session.sig);
     if (
         (!req.session.userId &&
             req.url != "/login" &&
             req.url != "/register") ||
-        !req.session.csrfSecret ||
-        !req.session.logged
+        !req.session.csrfSecret
     ) {
         res.redirect("/register");
     } else {
-        //console.log("get request to signers route happend!!!");
-        if (!req.session.signed) {
+        if (!req.session.sig) {
             res.redirect("/petition");
         } else {
             let num;
             db.number().then(({ rows }) => {
-                //console.log("number signers", rows[0].count);
                 num = rows[0].count;
             });
             db.getSigners()
@@ -335,7 +275,7 @@ app.get("/signers", (req, res) => {
                         rows: rows,
                         num,
                     });
-                    //console.log("get Signers: ", rows);
+
                     /*
             for (let i = 0; i < rows.length; i++) {
                 console.log(rows[i].first);
@@ -349,8 +289,8 @@ app.get("/signers", (req, res) => {
                 .catch((err) => {
                     console.log("err in getSigners: ", err);
                 });
-        } //closes else
-    } //closes else cookie UserId
+        }
+    }
 });
 
 ////////////////////////////////city ROUTE //////////////////////////////////////
@@ -359,18 +299,14 @@ app.get("/signers/:city", (req, res) => {
         (!req.session.userId &&
             req.url != "/login" &&
             req.url != "/register") ||
-        !req.session.csrfSecret ||
-        !req.session.logged
+        !req.session.csrfSecret
     ) {
         res.redirect("/register");
     } else {
-        //console.log("get request to signers route happend!!!");
         const city = req.params.city;
-        //console.log(req.params);
-        //console.log(city);
+
         db.getCities(req.params.city)
             .then(({ rows }) => {
-                //console.log("rows: ", rows);
                 res.render("city", {
                     rows: rows,
                     city,
@@ -384,20 +320,16 @@ app.get("/signers/:city", (req, res) => {
 
 //////////////////////////////login////////////////////////////////////////
 app.get("/login", (req, res) => {
-    //console.log("get request to login route happend!!!");
     res.render("login", {
         layout: "main",
     });
 });
 
 app.post("/login", (req, res) => {
-    //console.log("post request to login route happend!!!");
-    //console.log("req.body: ", req.body);
     let emailLogin = req.body.email;
-    //console.log(sign);
+
     let passwordLogin = req.body.password;
-    //console.log(password);
-    //console.log("req.body: ", req.body);
+
     let hash;
 
     if (emailLogin === "" || passwordLogin === "") {
@@ -409,46 +341,25 @@ app.post("/login", (req, res) => {
             .then(({ rows }) => {
                 //console.log("rows: ", results);
                 //console.log("password: ", results.rows[0].password);
-                //console.log(passwordLogin);
-                //console.log(results.rows[0].id);
-                //hashed = results.rows[0].password;
 
                 bc.compare(passwordLogin, rows[0].password).then((result) => {
                     if (result == true) {
-                        //console.log("password works!!!!");
+                        //password works
                         req.session.userId = rows[0].id;
-                        //console.log("req.session.userId: ", req.session.userId);
-                        //console.log("req.session in dbemail: ", req.session);
-                        /*console.log(
-                            "req.session.sig in dbemail: ",
-                            req.session.sig
-                        );
-                        */
 
                         db.checkSign(req.session.userId)
                             .then(({ rows }) => {
-                                //console.log("rows in checkSign ", rows[0]);
                                 if (rows[0] == undefined) {
                                     res.redirect("/petition");
                                 } else {
-                                    //console.log("rows[0] in else: ", rows[0]);
                                     req.session.sig = rows[0].id;
-                                    req.session.logged = true;
 
-                                    //console.log(req.session.sig);
                                     res.redirect("/signed");
                                 }
                             })
                             .catch((err) => {
                                 console.log("err in checkSign: ", err);
                             });
-                        /*
-                        if (!req.session.sig == undefined) {
-                            res.redirect("/petition");
-                        } else {
-                            res.redirect("/signed");
-                        } //closes if-else-cookie
-                        */
                     } else {
                         res.render("login", {
                             error: "Oh, something went wrong! Please try again :) ",
@@ -460,16 +371,11 @@ app.post("/login", (req, res) => {
                 console.log("err in email: ", err);
             });
     }
-
-    //console.log("req.session: ", req.session);
-
-    //console.log("req.session after adding something: ", req.session);
 });
 
 //////////////////////////////edit////////////////////////////////////////
 
 app.get("/edit", (req, res) => {
-    //console.log("get request to edit route happend!!!");
     if (
         (!req.session.userId &&
             req.url != "/login" &&
@@ -484,16 +390,15 @@ app.get("/edit", (req, res) => {
             let user_id = req.session.userId;
             db.editGet(user_id)
                 .then(({ rows }) => {
-                    //console.log("rows in getEdit", rows);
                     res.render("edit", {
                         rows: rows,
                     });
                 })
                 .catch((err) => {
                     console.log("err in editGet: ", err);
-                }); //closes error; //closes editGet
-        } //closes else
-    } //closes else userId cookie
+                }); //closes error;
+        } //closes editGet
+    } //closes editing
 });
 
 app.post("/edit", (req, res) => {
@@ -505,23 +410,22 @@ app.post("/edit", (req, res) => {
     ) {
         res.redirect("/register");
     } else {
-        //console.log("post request to login route happend!!!");
         let user_id = req.session.userId;
-        //console.log(user_id);
+
         let first = req.body.first;
-        //console.log("1", first);
+
         let last = req.body.last;
-        //console.log("2", last);
+
         let email = req.body.email;
-        //console.log(email);
+
         let pw = req.body.password;
-        //console.log("pw", pw);
+
         let age = req.body.age;
-        //console.log("age", age);
+
         let city = req.body.city;
-        //console.log("city", city);
+
         let url = req.body.url;
-        //console.log("url", url);
+
         let hash;
 
         if (url.startsWith("www")) {
@@ -537,36 +441,32 @@ app.post("/edit", (req, res) => {
                     .then(() => {
                         db.editProfiles(user_id, age, city, url)
                             .then((results) => {
-                                console.log(results);
-                                //console.log("this worked!!!");
+                                //delivers results
+
                                 res.redirect("/signed");
                             })
                             .catch((err) => {
                                 console.log("err in editProfiles: ", err);
-                            }); //closes error; //closes editGet
+                            });
                     })
                     .catch((err) => {
                         console.log("err in editUsers: ", err);
-                    }); //closes error; //closes editGet
+                    });
             } else {
-                console.log("password did change!");
-                console.log(pw);
+                //password got changed
                 hast = pw;
                 bc.hash(req.body.password).then((salted) => {
-                    console.log("salted pw: ", salted);
+                    //delivers salted password
 
                     db.editUsersWithPw(user_id, first, last, email, salted)
                         .then(() => {
-                            //console.log("this worked!!");
                             db.editProfiles(user_id, age, city, url)
                                 .then((results) => {
-                                    console.log(results);
-                                    console.log("this worked!!!");
                                     res.redirect("/signed");
                                 })
                                 .catch((err) => {
                                     console.log("err in editProfiles: ", err);
-                                }); //closes error; //closes editGet
+                                });
                         })
                         .catch((err) => {
                             console.log(
@@ -580,7 +480,6 @@ app.post("/edit", (req, res) => {
             let user_id = req.session.userId;
             db.editGet(user_id)
                 .then(({ rows }) => {
-                    //console.log("rows in getEdit", rows);
                     res.render("edit", {
                         rows: rows,
                         error: "Uh, something went wrong. Please try again",
@@ -588,7 +487,7 @@ app.post("/edit", (req, res) => {
                 })
                 .catch((err) => {
                     console.log("err in editGet: ", err);
-                }); //closes error; //closes editGet
+                });
         }
     }
 });
