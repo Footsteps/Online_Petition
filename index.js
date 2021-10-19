@@ -253,7 +253,6 @@ app.post("/logout", (req, res) => {
 ////////////////////////////////SIGNERS ROUTE //////////////////////////////////////
 
 app.get("/signers", (req, res) => {
-    console.log("req.session", req.session.sig);
     if (
         (!req.session.userId &&
             req.url != "/login" &&
@@ -384,7 +383,7 @@ app.get("/edit", (req, res) => {
     ) {
         res.redirect("/register");
     } else {
-        if (!req.session.signed) {
+        if (!req.session.sig) {
             res.redirect("/petition");
         } else {
             let user_id = req.session.userId;
