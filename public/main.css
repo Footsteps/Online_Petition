@@ -23,6 +23,7 @@ h2 {
 p {
     font-size: 22px;
 }
+
 /*
 .names {
     display: flex;
@@ -96,6 +97,7 @@ align-self: flex-end;
     border: 3px solid #440047;
     margin-left: 20%;
     margin-right: 20%;
+    text-align: justify;
 }
 
 /*

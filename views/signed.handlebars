@@ -2,27 +2,26 @@
 
 </p>
 
-        
-        <img class="signature" src="{{sign}}" alt="Signature of you" />
+<img class="signature" src="{{sign}}" alt="Signature of you" />
 
-       
 <div id="link">
 
-        <a href="/signers/">Click here to see who has signed as well!</a><br>
-        <a href="/edit/">Click here to edit your profile</a>
-        
-        <div id = "delete">
-                <form method ='post' action='/delete/signature'>
-                <button id="delete-button">Click here to delete your signature </button>
-                <input type="hidden" name="_csrf" value="{{csrfToken}}">
-                </form>
-        </div>    
-        <div id = "delete">
-                <form method ='post' action='/logout'>
-                <button id="delete-button">Click here to log out!</button>
-                <input type="hidden" name="_csrf" value="{{csrfToken}}">
-                </form>
-        </div>    
+    <a href="/signers/">Click here to see who has signed as well!</a><br />
+    <a href="/edit/">Click here to edit your profile</a>
+
+    <div id="delete">
+        <form method="post" action="/delete/signature">
+            <button id="delete-button">Click here to delete your signature
+            </button>
+            <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+        </form>
+    </div>
+    <div id="delete">
+        <form method="post" action="/logout">
+            <button id="delete-button">Click here to log out!</button>
+            <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+        </form>
+    </div>
 
 </div>
-<img src="/drone.jpg">
+<img src="/drone.jpg" />

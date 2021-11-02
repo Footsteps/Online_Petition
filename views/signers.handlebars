@@ -1,31 +1,38 @@
-
-
 <h1>Dearest coders who know how to programme drones!</h1>
-<p>If you want to become even more of a hero than you already
-are, <br>
-you would make us entirely happy if you told your drones 
-to send us stuff. <br>
-So far, already {{num}} people have signed!
+<p>If you want to become even more of a hero than you already are,
+    <br />
+    you would make us entirely happy if you told your drones to send us stuff.
+    <br />
+    So far, already
+    {{num}}
+    people have signed!
+    <br />
+    <br />
+    Click on the name to jump to the signer's given webpage.
+    <br />Click on the office to see who else from your office signed up!
+    <br />
+    <br />
+    <a id="back" href="/signed/">Or click here to go back!</a>
 </p>
-<img src="/hero.jpg">
+<img src="/hero.jpg" />
 
 <p>Yours sincerely...</p>
 
 <div class="signers">{{#rows}}
 
-{{#if url}}
-<p>
- <a href = {{url}} target="_blank"> {{first}} {{last}}</a>   {{age}}
- <a id="click" href="{{city}}">{{city}}</a> 
- </p>
- {{else}}
- <p>
- {{first}}  {{last}} {{age}} <a id="click" href="{{city}}">{{city}}</a> 
- </p>
- {{/if}}
-{{/rows}}
+        {{#if url}}
+            <p>
+                <a href={{url}} target="_blank"> {{first}} {{last}}</a>
+                {{age}}
+                <a id="click" href="{{city}}">{{city}}</a>
+            </p>
+        {{else}}
+            <p>
+                {{first}}
+                {{last}}
+                {{age}}
+                <a id="click" href="{{city}}">{{city}}</a>
+            </p>
+        {{/if}}
+    {{/rows}}
 </div>
-
-<p>Click on the name to jump to the signer's given webpage.</p>
-<p>Click on the office to see who else from your office signed up!</p>
-<p><a id="back" href="/signed/">Or click here to go back!</a></p>
